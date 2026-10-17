@@ -21,6 +21,10 @@ __pycache__/
 venv/
 
 # ── 비밀 정보 ──
+# 서비스 계정 키 (GitHub Secret에만 등록, 커밋 금지)
+skala-learn-ai-*.json
+*-firebase-adminsdk-*.json
+service-account*.json
 .env
 .env.*
 !.env.example

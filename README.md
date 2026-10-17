@@ -47,14 +47,31 @@ python3 -m http.server 8000
 PR을 열면 검증 후 7일짜리 **미리보기 주소**가 PR 댓글로 달립니다. Actions 탭에서 수동 실행(Run workflow)도 됩니다.
 
 ### 최초 1회: 서비스 계정 Secret 등록
-1. [Google Cloud 콘솔 → IAM → 서비스 계정](https://console.cloud.google.com/iam-admin/serviceaccounts?project=skala-learn-ai) → **서비스 계정 만들기** (이름 예: `github-deploy`)
-2. 역할: **Firebase 관리자**(Firebase Admin) + **서비스 사용량 소비자**(Service Usage Consumer)
-   (최소 권한으로 하려면 Firebase 호스팅 관리자 + Firebase 규칙 관리자 + API 키 뷰어 + 서비스 사용량 소비자)
-3. 만든 계정 → **키** 탭 → 키 추가 → 새 키 만들기 → JSON → 파일 다운로드
-4. GitHub 저장소 → Settings → Secrets and variables → Actions → **New repository secret**
+GitHub 서버는 내 구글 계정으로 로그인할 수 없으므로, **배포 권한만 가진 로봇 계정(서비스 계정)**을 만들고 그 **키(JSON)**를 GitHub Secret에 맡깁니다.
+
+1. [Google Cloud 콘솔 → IAM → 서비스 계정](https://console.cloud.google.com/iam-admin/serviceaccounts?project=skala-learn-ai) (Firebase와 같은 구글 계정으로 로그인)
+   → **+ 서비스 계정 만들기** → 이름 `github-deploy` → **만들고 계속하기**
+2. **권한** 단계의 "역할 선택" 맨 위 🔍 **검색창에 직접 입력**해서 추가 (기본 목록에는 안 보임)
+
+   | 검색어 | 역할 ID |
+   |---|---|
+   | `Firebase 관리자` | `roles/firebase.admin` |
+   | `서비스 사용량 소비자` | `roles/serviceusage.serviceUsageConsumer` |
+
+   → **계속** → **완료**
+   - ⚠️ "Firebase Admin SDK 관리자 서비스 에이전트"처럼 **"서비스 에이전트"**가 붙은 역할은 Google 내부용이라 고르지 않습니다
+   - 최소 권한으로 하려면 `Firebase 관리자` 대신 Firebase 호스팅 관리자 + Firebase 규칙 관리자 + API 키 뷰어
+3. 만든 계정(`github-deploy@skala-learn-ai.iam.gserviceaccount.com`) 클릭 → **키** 탭 → 키 추가 → 새 키 만들기 → **JSON** → 만들기 (파일 다운로드됨)
+4. [GitHub 저장소 → Settings → Secrets and variables → Actions](https://github.com/flashattention/skala-learn-ai/settings/secrets/actions) → **New repository secret**
    - Name: `FIREBASE_SERVICE_ACCOUNT_SKALA_LEARN_AI`
-   - Secret: 다운로드한 JSON 파일 내용 전체 붙여넣기
-5. 받은 JSON 파일은 삭제 (절대 커밋 금지)
+   - Secret: 다운로드한 JSON 파일 내용 **전체**(`{` 부터 `}` 까지) 붙여넣기
+5. 받은 JSON 파일은 삭제 — 이 파일만 있으면 누구나 배포할 수 있습니다 (실수로 프로젝트 폴더에 둬도 `.gitignore`가 막아 줌)
+
+### 배포 확인
+`git push origin main` → 저장소 **Actions** 탭에서 "Deploy" 실행 확인
+- ✅ 초록 체크 → 1~2분 뒤 https://skala-learn-ai.web.app 에 반영 (안 보이면 강력 새로고침 `Ctrl+Shift+R` / `Cmd+Shift+R`)
+- ❌ `validate` 실패 → 로그에 어느 파일·문항이 문제인지 나옴 → 로컬에서 `node scripts/validate.mjs`로 고친 뒤 다시 push
+- ❌ `deploy` 단계 403·Permission denied → 2번 역할이 빠졌는지 확인 / `Failed to authenticate` → Secret 이름·내용 확인
 
 > 대안: `npx firebase-tools init hosting:github`를 실행하면 서비스 계정 생성과 Secret 등록을 자동으로 해 줍니다
 > (이때 만들어지는 Secret 이름이 위와 다르면 workflow의 이름을 맞춰 주고, 규칙 배포를 위해 "Firebase 규칙 관리자" 역할을 추가하세요).
