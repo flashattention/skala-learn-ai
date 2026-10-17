@@ -6,7 +6,7 @@ registerField({
   icon: '🐍',
   color: '#2563eb',
   source: '교재: 2) 데이터분석 및 AIOps 1. 데이터 분석을 위한 Python 이해 (백정열)',
-  desc: '실행 구조(AST·바이트코드·PVM·GC)와 venv, 자료구조·컴프리헨션·제너레이터, 함수·데코레이터·예외·로깅, 타입 힌트·Pydantic, pytest·Ruff·pre-commit, GIL·asyncio·multiprocessing, Pandas·Polars·DuckDB, 시각화·통계·sklearn Pipeline.',
+  desc: '실행 구조(AST·바이트코드·PVM·GC)와 venv, 자료구조·컴프리헨션·제너레이터, 함수·데코레이터·예외·로깅, 타입 힌트·Pydantic, pytest·Ruff·pre-commit, GIL·asyncio·multiprocessing, Pandas·Polars·DuckDB, 시각화·통계·sklearn Pipeline. [보충] OOP·복사·이터레이터, SQL·데이터 엔지니어링(ETL/ELT·Spark·Kafka·Airflow).',
   units: [
     // ───────────────────────────── 1회차
     {
@@ -214,7 +214,7 @@ total = sum(float(r[2]) for r in read_rows('large.csv'))
       content: `
 ### 1. 함수
 - 기본값 인자는 ==뒤에 와야 한다== (\`def f(age=20, name)\`은 SyntaxError)
-- ==\`*args\`== = 가변 위치 인자(**tuple**), ==\`**kwargs\`== = 가변 키워드 인자(**dict**) — 순서: 일반 인자 → \*args → \*\*kwargs
+- ==\`*args\`== = 가변 위치 인자(**tuple**), ==\`**kwargs\`== = 가변 키워드 인자(**dict**) — 순서: 일반 인자 → \`*args\` → \`**kwargs\`
 - 호출 시 \`*numbers\`로 리스트를 풀어 전달(언패킹)
 - ==함수는 일급 객체(First-class Object)==: 변수에 할당, 인자로 전달, 반환값으로 사용 가능
 - **lambda**: 한 줄 익명 함수 — \`sort(key=lambda x: x[1])\`, \`map\`, \`filter\`, \`functools.reduce\`
@@ -863,6 +863,258 @@ data-project/
         { q: 'joblib으로 Pipeline 전체를 저장하는 가장 큰 이점은?', o: ['파일 크기가 0이 된다', '배포 환경에서도 학습 때와 동일한 전처리 + 예측이 보장된다', '학습이 빨라진다', 'GPU를 쓸 수 있다'], a: 1, e: 'Training-Serving Skew 방지 → MLOps의 기본.', imp: 4, p: 60, s: '2차' },
         { q: 'CRISP-DM의 핵심 메시지로 교재가 강조한 것은?', o: ['최신 알고리즘이 가장 중요', '기술 중심이 아닌 문제 해결 중심 — 좋은 분석은 올바른 문제 정의에서 시작', '배포는 선택 사항', '평가 단계는 생략 가능'], a: 1, e: '업무 이해 → 데이터 이해 → 준비 → 모델링 → 평가 → 배포.', imp: 3, p: 45, s: '1차' },
         { q: '좋은 분석 파이프라인의 원칙이 **아닌** 것은?', o: ['각 단계(E-V-T-L) 분리', '오류 기록', '재현 가능·각 단계 테스트 가능', '모든 단계를 하나의 거대한 함수로 작성'], a: 3, e: '단계 분리 → 실패 시 어느 단계인지 즉시 파악.', imp: 3, p: 40, s: '1차' },
+      ],
+    },
+    // ───────────────────────────── 9회차 (보충)
+    {
+      id: 'py9',
+      title: '[보충] 객체지향(OOP)과 파이썬 핵심 문법 심화 — 클래스·이터레이터·복사',
+      goals: [
+        '클래스와 인스턴스, self·__init__, 상속·오버라이딩, 클래스 변수 vs 인스턴스 변수를 설명할 수 있다',
+        '매직 메서드(__repr__·__eq__·__len__·__iter__), @classmethod·@staticmethod·@property를 구분해 쓸 수 있다',
+        'Iterable vs Iterator, 얕은 복사 vs 깊은 복사, 가변 기본값 함정, if __name__ == "__main__"을 설명할 수 있다',
+      ],
+      content: `
+:::deep 이 회차는 교재 외 보충입니다
+교재는 "클래스 = 붕어빵 틀, 인스턴스 = 붕어빵"으로 짧게 요약했지만, Python 기술 면접에서는 OOP와 복사·이터레이터 개념을 자주 묻는다. 교재 2·3회차 내용과 연결해 정리한다.
+:::
+
+### 1. 클래스와 인스턴스
+- ==클래스 = 붕어빵 틀(설계도)==, ==인스턴스 = 그 틀로 찍어낸 붕어빵(실체 객체)== — 같은 클래스로 만든 인스턴스들은 각자 자기 데이터를 가진다
+- ==\`self\`==: 메서드가 호출된 **그 인스턴스 자신**. Python은 \`obj.method()\`를 \`Class.method(obj)\`로 바꿔 호출하므로 첫 인자로 명시
+- ==\`__init__\`==: 인스턴스가 생성된 직후 호출되는 **초기화 메서드**(생성자 역할, 실제 객체 생성은 \`__new__\`)
+
+~~~python
+class Account:
+    bank = "SK Bank"                      # 클래스 변수: 모든 인스턴스가 공유
+    def __init__(self, owner, balance=0):
+        self.owner = owner                # 인스턴스 변수: 객체마다 따로
+        self._balance = balance           # _ 접두사 = "내부용" 관례 (강제 아님)
+
+    def deposit(self, amount):
+        if amount <= 0:
+            raise ValueError("입금액은 양수여야 합니다")
+        self._balance += amount
+
+    @property                             # 메서드를 속성처럼 읽기 (getter)
+    def balance(self):
+        return self._balance
+
+    def __repr__(self):                   # 개발자용 문자열 표현
+        return f"Account({self.owner!r}, {self._balance})"
+
+a = Account("Alice"); a.deposit(100); a.balance   # 100
+~~~
+:::warn 클래스 변수에 가변 객체를 두면 공유된다
+\`class Team: members = []\`로 두고 \`t1.members.append(...)\`하면 **모든 인스턴스가 같은 리스트**를 공유한다 → 객체별 데이터는 반드시 \`__init__\`에서 \`self.members = []\`로.
+:::
+
+### 2. 상속과 다형성
+~~~python
+class SavingsAccount(Account):            # Account를 상속
+    def __init__(self, owner, balance=0, rate=0.03):
+        super().__init__(owner, balance)  # 부모 초기화 재사용
+        self.rate = rate
+    def deposit(self, amount):            # 오버라이딩(재정의)
+        super().deposit(amount)
+        self._balance += amount * self.rate
+~~~
+- ==상속==: 부모의 속성·메서드를 물려받아 재사용, ==오버라이딩==: 자식이 메서드를 재정의, ==\`super()\`==: 부모 메서드 호출
+- ==다형성==: 같은 메서드 이름(deposit)을 호출해도 객체 타입에 따라 다르게 동작
+- 다중 상속 시 메서드 탐색 순서는 **MRO**(Method Resolution Order, \`Class.__mro__\`)
+- 실무 원칙: 상속보다 **조합(Composition)**을 우선 고려 — "is-a"가 명확할 때만 상속
+- 추상 클래스: \`from abc import ABC, abstractmethod\` → 자식이 반드시 구현해야 할 메서드 강제 (4회차 Protocol과 비교: ABC는 명시적 상속, Protocol은 구조적)
+
+### 3. 메서드 종류와 매직 메서드
+| 종류 | 첫 인자 | 용도 |
+|---|---|---|
+| 인스턴스 메서드 | \`self\` | 인스턴스 데이터 사용 |
+| ==\`@classmethod\`== | \`cls\` | 클래스 자체를 다룸 — **대체 생성자**(\`Account.from_dict(d)\`) |
+| ==\`@staticmethod\`== | 없음 | 클래스와 관련된 유틸 함수(인스턴스·클래스 데이터 미사용) |
+| ==\`@property\`== | \`self\` | getter/setter로 **속성처럼 접근 + 검증 로직** 캡슐화 |
+
+| 매직(던더) 메서드 | 호출 시점 |
+|---|---|
+| \`__init__\` | 생성 직후 초기화 |
+| ==\`__repr__\` / \`__str__\`== | repr()·디버깅 / print()·사용자용 |
+| ==\`__eq__\`, \`__hash__\`== | \`==\` 비교, dict 키·set 원소로 쓸 때 (eq를 재정의하면 hash도 정의해야 해시 가능) |
+| \`__len__\`, \`__getitem__\` | len(obj), obj[i] |
+| ==\`__iter__\`, \`__next__\`== | for 루프 (이터레이터 프로토콜) |
+| \`__enter__\`, \`__exit__\` | ==with 문 (컨텍스트 매니저)== — 자원 자동 정리 |
+| \`__call__\` | obj()처럼 함수처럼 호출 |
+- dataclass(4회차)는 \`__init__\`·\`__repr__\`·\`__eq__\`를 자동 생성해 주는 도구
+
+### 4. Iterable vs Iterator
+:::key 면접 단골 구분
+- ==Iterable==: \`__iter__\`로 이터레이터를 **만들어 줄 수 있는** 객체 — list, tuple, str, dict, set, range. 여러 번 순회 가능
+- ==Iterator==: \`__next__\`로 **다음 값을 하나씩 꺼내는** 객체, 다 꺼내면 \`StopIteration\`. ==한 번 소진되면 끝==
+- \`for x in lst\`는 내부적으로 \`it = iter(lst)\` → \`next(it)\` 반복 → StopIteration에서 종료
+- ==제너레이터는 iterator를 간단히 만드는 방법== (yield, 2회차) → 그래서 한 번만 순회된다
+~~~python
+it = iter([1, 2]); next(it); next(it); next(it)   # 1, 2, StopIteration
+~~~
+:::
+
+### 5. 얕은 복사 vs 깊은 복사
+| 방식 | 동작 | 예 |
+|---|---|---|
+| 대입 \`b = a\` | 복사 아님 — ==같은 객체를 가리키는 이름이 하나 더== | b를 바꾸면 a도 바뀜 |
+| ==얕은 복사 (shallow)== | **바깥 컨테이너만 새로**, 안의 원소는 같은 객체를 참조 | \`a[:]\`, \`list(a)\`, \`a.copy()\`, \`copy.copy(a)\` |
+| ==깊은 복사 (deep)== | **안쪽 객체까지 재귀적으로 새로** 복사 | \`copy.deepcopy(a)\` |
+~~~python
+import copy
+a = [[1, 2], [3, 4]]
+s = a.copy();      s[0].append(99)    # a도 [[1, 2, 99], [3, 4]] — 안쪽 리스트 공유!
+d = copy.deepcopy(a); d[0].append(7)  # a는 그대로
+~~~
+- Pandas 연결: \`df.copy()\`는 기본 deep=True(데이터 복사), 필터 결과를 수정할 땐 \`.copy()\`를 명시(7회차 CoW)
+
+### 6. 그 밖의 단골 문법
+- ==가변 기본값 함정==: \`def f(x, acc=[])\`의 기본 리스트는 **함수 정의 시 한 번만** 생성되어 호출 간 공유 → \`acc=None\` 후 함수 안에서 생성
+- ==\`if __name__ == "__main__":\`==: 파일을 **직접 실행할 때만** 아래 코드 실행, 다른 모듈에서 import할 땐 실행 안 됨 → 모듈 재사용 + 테스트 코드 분리. multiprocessing에서는 자식 프로세스의 재귀 실행을 막기 위해 필수(6회차)
+- ==인터프리터 종류==: **CPython**(C로 구현된 표준, GIL 있음), **PyPy**(JIT 컴파일로 순수 Python 루프가 빠름, C 확장 호환성 제한), Jython(JVM), IronPython(.NET)
+- 언패킹 \`a, *rest = [1, 2, 3]\`, 스왑 \`a, b = b, a\`, 바다코끼리 연산자 \`if (n := len(data)) > 10:\` (PEP 572)
+- \`is\` vs \`==\` (2회차), 문자열은 불변 → 반복 연결은 \`''.join(list)\`가 효율적
+`,
+      iv: [
+        { q: '클래스와 인스턴스의 차이, 그리고 self의 역할을 설명해 주세요.', a: '클래스는 객체를 만들기 위한 설계도(붕어빵 틀)이고, 인스턴스는 그 설계도로 실제 만들어진 개별 객체(붕어빵)입니다. 같은 클래스로 만든 인스턴스들은 메서드는 공유하지만 각자 자기 데이터(인스턴스 변수)를 가집니다. self는 메서드가 호출된 바로 그 인스턴스를 가리키는 참조로, Python은 obj.method()를 Class.method(obj)로 바꿔 호출하기 때문에 메서드의 첫 번째 매개변수로 명시합니다. __init__은 인스턴스가 만들어진 직후 self에 초기 속성을 설정하는 초기화 메서드입니다.', imp: 4, p: 75, s: '1차' },
+        { q: '얕은 복사와 깊은 복사의 차이를 예를 들어 설명해 주세요.', a: '대입(b = a)은 복사가 아니라 같은 객체를 가리키는 이름을 하나 더 만드는 것이라 b를 수정하면 a도 바뀝니다. 얕은 복사(a.copy(), a[:], copy.copy)는 바깥 컨테이너만 새로 만들고 안의 원소는 원본과 같은 객체를 참조하므로, 중첩 리스트 [[1,2],[3,4]]를 얕은 복사한 뒤 안쪽 리스트에 append하면 원본도 바뀝니다. 깊은 복사(copy.deepcopy)는 안쪽 객체까지 재귀적으로 새로 만들어 원본과 완전히 독립됩니다. 대신 비용이 크므로 중첩된 가변 객체를 독립적으로 수정해야 할 때만 씁니다.', imp: 5, p: 80, s: '1차' },
+        { q: 'Iterable과 Iterator의 차이는 무엇인가요?', a: 'Iterable은 __iter__ 메서드로 이터레이터를 만들어 줄 수 있는 객체로, list·tuple·str·dict처럼 여러 번 순회할 수 있습니다. Iterator는 __next__로 다음 값을 하나씩 꺼내고, 더 꺼낼 값이 없으면 StopIteration을 발생시키는 객체로, 한 번 소진되면 다시 순회할 수 없습니다. for 루프는 내부적으로 iter()로 이터레이터를 얻고 next()를 반복 호출하다 StopIteration에서 멈춥니다. 제너레이터는 yield로 이터레이터를 간단히 만드는 방법이라 마찬가지로 한 번만 순회됩니다.', imp: 4, p: 70, s: '1차' },
+        { q: '@classmethod, @staticmethod, @property는 각각 언제 쓰나요?', a: '@classmethod는 첫 인자로 클래스(cls)를 받아 클래스 자체를 다루는 메서드로, from_dict·from_csv 같은 대체 생성자나 상속 시 자식 클래스 타입을 그대로 생성할 때 씁니다. @staticmethod는 인스턴스나 클래스 데이터를 쓰지 않지만 논리적으로 그 클래스에 속하는 유틸리티 함수에 씁니다. @property는 메서드를 속성처럼 접근하게 해, 내부 값(_balance)을 감추고 읽기 전용으로 노출하거나 setter에서 검증 로직을 넣는 캡슐화에 씁니다.', imp: 3, p: 55, s: '1차' },
+        { q: 'if __name__ == "__main__":은 왜 쓰나요?', a: 'Python 파일은 직접 실행되면 __name__이 "__main__"이 되고, 다른 파일에서 import되면 모듈 이름이 됩니다. 그래서 이 조건 아래에 둔 코드는 파일을 직접 실행할 때만 동작하고, 모듈로 import될 때는 실행되지 않습니다. 덕분에 같은 파일을 재사용 가능한 모듈이자 실행 스크립트로 쓸 수 있고 테스트·데모 코드를 분리할 수 있습니다. 또 multiprocessing에서는 자식 프로세스가 모듈을 다시 import할 때 프로세스 생성 코드가 재귀적으로 실행되는 것을 막기 위해 필수입니다.', imp: 3, p: 55, s: '1차' },
+      ],
+      quiz: [
+        { q: '클래스와 인스턴스에 대한 설명으로 옳은 것은?', o: ['인스턴스는 설계도, 클래스는 실체', '클래스는 설계도(붕어빵 틀), 인스턴스는 그 클래스로 만든 실제 객체', '둘은 같은 것이다', '인스턴스는 메서드를 가질 수 없다'], a: 1, e: '교재 요약: 클래스 = 붕어빵 틀, 인스턴스 = 붕어빵.', imp: 3, p: 45, s: '1차' },
+        { q: '클래스 변수 members = []를 두고 t1.members.append("A")를 하면?', o: ['t1에만 추가된다', '모든 인스턴스가 공유하는 같은 리스트에 추가된다', '오류가 발생한다', '새 리스트가 생성된다'], a: 1, e: '가변 객체를 클래스 변수로 두면 공유된다 → __init__에서 self.members = [].', imp: 4, p: 55, s: '1차' },
+        { q: '자식 클래스에서 부모 클래스의 __init__을 호출하는 방법은?', o: ['parent()', 'super().__init__(...)', 'self.__init__()', 'base.init()'], a: 1, e: 'super()로 부모 메서드를 재사용.', imp: 3, p: 45, s: '1차' },
+        { q: '대체 생성자(Account.from_dict(d))를 만들 때 적합한 데코레이터는?', o: ['@staticmethod', '@classmethod', '@property', '@dataclass'], a: 1, e: 'cls를 받아 클래스 자체로 인스턴스를 생성.', imp: 3, p: 40, s: '1차' },
+        { q: 'with 문에서 자원을 자동 정리하기 위해 구현하는 매직 메서드는?', o: ['__init__ / __del__', '__enter__ / __exit__', '__iter__ / __next__', '__get__ / __set__'], a: 1, e: '컨텍스트 매니저 프로토콜. 파일 open()이 대표 예.', imp: 3, p: 45, s: '1차' },
+        { q: '__eq__를 재정의한 객체를 dict 키로 쓰려면 함께 정의해야 하는 것은?', o: ['__len__', '__hash__', '__repr__', '__call__'], a: 1, e: '__eq__만 정의하면 __hash__가 None이 되어 해시 불가.', imp: 2, p: 30, s: '2차' },
+        { q: 'Iterator에 대한 설명으로 옳은 것은?', o: ['여러 번 처음부터 순회할 수 있다', '__next__로 값을 하나씩 꺼내며, 다 꺼내면 StopIteration이 발생하고 다시 쓸 수 없다', 'list는 iterator다', 'for 루프에 쓸 수 없다'], a: 1, e: 'list는 iterable(이터레이터를 만들어 줌), iter(list)가 iterator.', imp: 4, p: 55, s: '1차' },
+        { q: 'a = [[1, 2], [3, 4]]; b = a.copy(); b[0].append(9) 이후 a는?', o: ['[[1, 2], [3, 4]]', '[[1, 2, 9], [3, 4]]', '[[9], [3, 4]]', '오류'], a: 1, e: '얕은 복사는 바깥만 새로 → 안쪽 리스트는 공유. 독립하려면 copy.deepcopy.', imp: 5, p: 65, s: '1차' },
+        { q: 'b = a (리스트 대입)에 대한 설명으로 옳은 것은?', o: ['깊은 복사', '얕은 복사', '복사가 아니라 같은 객체를 가리키는 이름이 하나 더 생긴 것', '새 리스트 생성'], a: 2, e: 'b를 수정하면 a도 바뀐다 (a is b → True).', imp: 4, p: 55, s: '1차' },
+        { q: 'if __name__ == "__main__": 블록이 실행되는 경우는?', o: ['다른 모듈에서 import할 때', '파일을 직접 실행할 때만', '항상', '테스트할 때만'], a: 1, e: 'import 시엔 __name__이 모듈 이름 → 실행 안 됨.', imp: 3, p: 45, s: '1차' },
+        { q: 'JIT 컴파일로 순수 Python 루프를 빠르게 실행하는 대체 인터프리터는?', o: ['CPython', 'PyPy', 'Jython', 'IPython'], a: 1, e: 'CPython = 표준(C 구현, GIL), PyPy = JIT, Jython = JVM.', imp: 2, p: 25, s: '1차' },
+      ],
+    },
+    // ───────────────────────────── 10회차 (보충)
+    {
+      id: 'py10',
+      title: '[보충] SQL과 데이터 엔지니어링 기초 — JOIN·윈도우 함수·ETL/ELT·Spark·Kafka·Airflow',
+      goals: [
+        'JOIN 종류, GROUP BY/HAVING, 윈도우 함수, 인덱스, 정규화, 트랜잭션(ACID)을 설명하고 쿼리로 쓸 수 있다',
+        'OLTP vs OLAP, 데이터 웨어하우스·데이터 레이크·레이크하우스, ETL vs ELT를 구분할 수 있다',
+        '배치 vs 스트리밍, Spark·Kafka·Airflow의 역할과 데이터 품질·멱등성 개념을 설명할 수 있다',
+      ],
+      content: `
+:::deep 이 회차는 교재 외 보충입니다
+교재는 Pandas·Polars·DuckDB(7회차)까지 다루지만, **Data 엔지니어** 직무 면접에서는 SQL과 데이터 파이프라인 기본기를 거의 반드시 확인한다. 코딩 테스트에 SQL이 나오는 경우도 많다.
+:::
+
+### 1. SQL 실행 순서와 집계
+:::key 논리적 실행 순서
+==FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT==
+- 그래서 SELECT에서 만든 별칭은 WHERE에서 쓸 수 없다(대부분 DB)
+- ==WHERE는 그룹핑 전 행 필터==, ==HAVING은 그룹핑 후 집계 결과 필터==
+:::
+~~~sql
+SELECT customer_id, COUNT(*) AS n_orders, SUM(amount) AS total
+FROM orders
+WHERE order_date >= '2026-01-01'          -- 행 필터
+GROUP BY customer_id
+HAVING SUM(amount) >= 100000              -- 그룹 필터
+ORDER BY total DESC
+LIMIT 10;
+~~~
+- \`COUNT(*)\`는 모든 행, \`COUNT(col)\`은 ==NULL 제외==, \`COUNT(DISTINCT col)\`은 고유값 수
+- NULL 비교는 \`= NULL\`이 아니라 ==\`IS NULL\`== (NULL과의 비교 결과는 UNKNOWN), \`COALESCE(col, 0)\`으로 대체
+
+### 2. JOIN
+| JOIN | 결과 |
+|---|---|
+| ==INNER== | 양쪽에 **모두 매칭되는 행만** |
+| ==LEFT (OUTER)== | 왼쪽 전부 + 매칭되는 오른쪽(없으면 NULL) |
+| RIGHT / FULL OUTER | 오른쪽 전부 / 양쪽 전부 |
+| CROSS | 모든 조합(카테시안 곱) |
+| SELF | 같은 테이블끼리 (예: 직원-관리자) |
+:::warn 단골 함정
+- LEFT JOIN 후 WHERE에 **오른쪽 테이블 조건**을 걸면 NULL 행이 제거되어 사실상 INNER JOIN이 된다 → 조건을 ON 절로
+- 키가 중복된 테이블과 JOIN하면 ==행이 뻥튀기==(fan-out) → 집계 전에 키 유일성 확인
+- "주문이 없는 고객" = \`LEFT JOIN orders ... WHERE o.id IS NULL\` (Anti Join)
+:::
+
+### 3. 윈도우 함수
+GROUP BY와 달리 ==행을 줄이지 않고== 그룹별 계산 결과를 각 행에 붙인다: \`함수() OVER (PARTITION BY ... ORDER BY ...)\`
+~~~sql
+SELECT customer_id, order_date, amount,
+       ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date DESC) AS rn,  -- 최근 주문 = rn 1
+       SUM(amount)  OVER (PARTITION BY customer_id ORDER BY order_date)      AS cum_amount, -- 누적합
+       LAG(amount)  OVER (PARTITION BY customer_id ORDER BY order_date)      AS prev_amount -- 직전 값
+FROM orders;
+~~~
+- ==ROW_NUMBER==(1,2,3,4 — 동점도 다른 번호) / ==RANK==(1,2,2,4 — 동점 후 건너뜀) / ==DENSE_RANK==(1,2,2,3)
+- LAG/LEAD(이전/다음 행), 이동평균 \`AVG(x) OVER (ORDER BY d ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)\`
+- "그룹별 Top-N" = 윈도우 함수로 순위 → 서브쿼리/CTE(\`WITH\`)에서 \`rn <= N\` 필터
+
+### 4. 인덱스·정규화·트랜잭션
+- ==인덱스==: 책의 색인처럼 조회를 빠르게 하는 자료구조(주로 **B-Tree**, O(log n)). **조회↑, 쓰기(INSERT/UPDATE)·저장공간 비용↑**. 카디널리티(고유값 수)가 높고 WHERE·JOIN에 자주 쓰는 컬럼에 효과적. 복합 인덱스는 ==왼쪽 컬럼부터== 사용(Leftmost prefix). 컬럼에 함수를 씌우면(\`WHERE YEAR(d) = 2026\`) 인덱스를 못 탈 수 있음
+- ==정규화==: 중복을 제거해 이상(삽입·갱신·삭제 이상)을 막도록 테이블 분리(1NF 원자값, 2NF 부분 종속 제거, 3NF 이행 종속 제거). ==반정규화==: 분석·조회 성능을 위해 일부러 중복 허용(DW의 스타 스키마)
+- ==트랜잭션 ACID==: **원자성**(전부 or 전무), **일관성**(제약 유지), **격리성**(동시 실행 간섭 차단), **지속성**(커밋되면 영구)
+- PK(유일·NOT NULL) / FK(참조 무결성)
+
+### 5. OLTP vs OLAP, 저장소 아키텍처
+| 구분 | OLTP | OLAP |
+|---|---|---|
+| 목적 | 서비스 트랜잭션(주문·결제) | ==분석·집계·리포트== |
+| 쿼리 | 짧고 잦은 읽기/쓰기 | 대량 스캔·집계 |
+| 저장 | 행 기반(Row) | ==열 기반(Columnar)== — 필요한 컬럼만 읽고 압축률↑ |
+| 예 | MySQL, PostgreSQL | BigQuery, Snowflake, Redshift, DuckDB |
+- ==데이터 웨어하우스(DW)==: 정제된 **정형** 데이터를 스키마에 맞춰 저장(Schema-on-Write), 스타 스키마(**팩트** 테이블 + **차원** 테이블)
+- ==데이터 레이크==: 원본 그대로 **정형·반정형·비정형**을 저렴하게 저장(S3 등, Schema-on-Read). 관리 안 하면 "데이터 늪"
+- ==레이크하우스==: 레이크 위에 테이블 포맷(Delta Lake, Iceberg)으로 **ACID·스키마·타임트래블** 제공 → 둘의 장점 결합
+- 파일 포맷: CSV(행, 무스키마) vs ==Parquet(열 기반·압축·스키마)== — 분석에는 Parquet
+
+### 6. 파이프라인: ETL vs ELT, 배치 vs 스트리밍
+- ==ETL==: 추출 → **변환 후** 적재 (전통적 DW, 적재 전 정제)
+- ==ELT==: 추출 → 원본을 먼저 적재 → **DW 안에서 SQL로 변환** (클라우드 DW의 강력한 연산, dbt) → 원본 보존·재처리 쉬움
+- ==배치==: 일정 주기로 모아서 처리(일 단위 리포트, 재학습) / ==스트리밍==: 이벤트가 오는 즉시 처리(이상거래 탐지, 실시간 추천)
+| 도구 | 역할 |
+|---|---|
+| ==Apache Spark== | **분산 대용량 처리** 엔진 — 메모리 기반, DataFrame/SQL API, 지연 실행(Lazy, Polars와 유사), 셔플이 비용의 핵심 |
+| ==Apache Kafka== | **분산 이벤트 스트리밍 플랫폼(메시지 큐)** — Producer → Topic(Partition) → Consumer Group, 디스크에 보관해 재처리 가능 |
+| ==Apache Airflow== | **워크플로 오케스트레이션** — 작업 의존성을 ==DAG==로 정의, 스케줄·재시도·모니터링 |
+| dbt | DW 안의 SQL 변환을 코드·테스트로 관리 (ELT의 T) |
+:::key 좋은 파이프라인의 조건 (교재 8회차 E-V-T-L과 연결)
+- ==멱등성(Idempotency)==: 같은 작업을 여러 번 재실행해도 결과가 같아야 함 → 실패 후 재시도 안전 (덮어쓰기/파티션 단위 교체, upsert)
+- ==데이터 품질 검사==: 스키마·NULL 비율·범위·중복·건수 검증(Great Expectations, Pandera, Pydantic) → 실패 시 중단·알림
+- 증분 처리(새로 들어온 것만), 파티셔닝(날짜별), 백필(backfill), 데이터 계보(lineage)와 모니터링
+:::
+`,
+      iv: [
+        { q: 'WHERE와 HAVING의 차이, 그리고 SQL의 실행 순서를 설명해 주세요.', a: 'SQL은 논리적으로 FROM과 JOIN, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT 순으로 처리됩니다. WHERE는 그룹핑 전에 개별 행을 거르는 조건이고, HAVING은 GROUP BY로 묶인 뒤 SUM이나 COUNT 같은 집계 결과를 기준으로 그룹을 거르는 조건입니다. 그래서 집계 함수 조건은 HAVING에 써야 하고, 집계가 필요 없는 조건은 WHERE에서 먼저 걸러야 처리할 데이터가 줄어 효율적입니다. 또 SELECT의 별칭은 WHERE보다 늦게 만들어지므로 WHERE에서 쓸 수 없습니다.', imp: 4, p: 70, s: '1차' },
+        { q: 'INNER JOIN과 LEFT JOIN의 차이와 주의할 점을 말해 주세요.', a: 'INNER JOIN은 양쪽 테이블에 모두 매칭되는 행만 반환하고, LEFT JOIN은 왼쪽 테이블의 모든 행을 유지하면서 매칭되는 오른쪽 값이 없으면 NULL로 채웁니다. 주의할 점은 첫째, LEFT JOIN 후 WHERE에 오른쪽 테이블 조건을 걸면 NULL 행이 제거되어 INNER JOIN처럼 동작하므로 그런 조건은 ON 절에 넣어야 합니다. 둘째, 조인 키가 중복된 테이블과 조인하면 행이 뻥튀기되어 합계가 부풀려지므로 키의 유일성을 먼저 확인합니다. 주문이 없는 고객처럼 매칭되지 않는 행을 찾을 때는 LEFT JOIN 후 오른쪽 키가 NULL인 행을 고릅니다.', imp: 4, p: 70, s: '1차' },
+        { q: '윈도우 함수는 무엇이고 GROUP BY와 어떻게 다른가요?', a: '윈도우 함수는 OVER(PARTITION BY ... ORDER BY ...)로 정의한 범위 안에서 순위, 누적합, 이전 행 값 같은 계산을 하되 행을 줄이지 않고 각 행에 결과를 붙이는 함수입니다. GROUP BY는 그룹당 한 행으로 요약해 버리지만, 윈도우 함수는 원래 행을 유지하므로 고객별 최근 주문 찾기, 그룹별 Top-N, 누적 매출, 전월 대비 증감 같은 분석에 씁니다. 순위 함수 중 ROW_NUMBER는 동점에도 다른 번호를, RANK는 동점 뒤 순위를 건너뛰고, DENSE_RANK는 건너뛰지 않습니다.', imp: 4, p: 65, s: '1차' },
+        { q: '인덱스는 무엇이고 항상 많이 만들수록 좋은가요?', a: '인덱스는 책의 색인처럼 특정 컬럼 값으로 행을 빠르게 찾도록 만든 별도의 자료구조로, 주로 B-Tree를 써서 전체 스캔 대신 로그 시간에 조회합니다. 하지만 데이터가 추가·수정·삭제될 때마다 인덱스도 갱신해야 해서 쓰기 성능이 떨어지고 저장공간도 늘어나므로 많을수록 좋은 것은 아닙니다. WHERE나 JOIN에 자주 쓰이고 고유값이 많은 컬럼에 만들고, 복합 인덱스는 왼쪽 컬럼부터 사용된다는 점과, 컬럼에 함수를 씌우면 인덱스를 못 탈 수 있다는 점을 고려합니다.', imp: 4, p: 60, s: '1차' },
+        { q: 'ETL과 ELT의 차이, 그리고 데이터 웨어하우스와 데이터 레이크의 차이를 설명해 주세요.', a: 'ETL은 데이터를 추출해 변환한 뒤 적재하는 방식으로, 전통적인 DW처럼 정제된 데이터만 넣을 때 씁니다. ELT는 원본을 먼저 적재하고 BigQuery나 Snowflake 같은 클라우드 DW의 연산력으로 내부에서 SQL로 변환하는 방식이라 원본이 보존되어 재처리가 쉽습니다. 데이터 웨어하우스는 분석용으로 정제된 정형 데이터를 스키마에 맞춰 저장하는 곳이고, 데이터 레이크는 정형·반정형·비정형 원본을 저렴한 객체 스토리지에 그대로 저장하는 곳입니다. 레이크하우스는 Delta Lake나 Iceberg 같은 테이블 포맷으로 레이크 위에 ACID와 스키마 관리를 더해 두 장점을 결합합니다.', imp: 4, p: 65, s: '2차' },
+        { q: '데이터 파이프라인을 설계할 때 중요하게 생각하는 점은 무엇인가요?', a: '첫째, 멱등성입니다. 실패 후 재실행해도 데이터가 중복되거나 꼬이지 않도록 날짜 파티션 단위로 덮어쓰거나 upsert합니다. 둘째, 데이터 품질 검사로 스키마, NULL 비율, 값의 범위, 중복, 건수를 단계마다 검증하고 실패하면 다음 단계로 넘기지 않고 알림을 보냅니다. 셋째, 처리 방식 선택으로 리포트나 재학습처럼 주기적인 작업은 배치로, 이상거래 탐지처럼 즉시성이 중요하면 Kafka 기반 스트리밍으로 설계합니다. 마지막으로 Airflow 같은 오케스트레이터로 의존성, 재시도, 모니터링, 백필을 관리하고 증분 처리로 비용을 줄입니다.', imp: 5, p: 70, s: '2차' },
+      ],
+      quiz: [
+        { q: 'SQL의 논리적 실행 순서로 옳은 것은?', o: ['SELECT → FROM → WHERE → GROUP BY', 'FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY', 'FROM → SELECT → WHERE → HAVING', 'WHERE → FROM → SELECT → GROUP BY'], a: 1, e: '그래서 SELECT 별칭은 WHERE에서 쓸 수 없다.', imp: 4, p: 55, s: '1차' },
+        { q: '"총 구매액이 10만 원 이상인 고객"을 고르는 조건을 넣을 위치는?', o: ['WHERE SUM(amount) >= 100000', 'HAVING SUM(amount) >= 100000', 'ORDER BY', 'ON 절'], a: 1, e: '집계 결과 조건은 GROUP BY 이후의 HAVING.', imp: 4, p: 55, s: '1차' },
+        { q: 'NULL 값을 가진 행을 찾는 올바른 조건은?', o: ['col = NULL', 'col IS NULL', "col = ''", 'col == NULL'], a: 1, e: 'NULL과의 = 비교는 UNKNOWN → 아무 행도 안 나옴.', imp: 3, p: 45, s: '1차' },
+        { q: 'COUNT(*)와 COUNT(col)의 차이는?', o: ['같다', 'COUNT(*)는 모든 행, COUNT(col)은 col이 NULL인 행 제외', 'COUNT(col)이 더 많다', 'COUNT(*)는 고유값 수'], a: 1, e: '고유값 수는 COUNT(DISTINCT col).', imp: 3, p: 45, s: '1차' },
+        { q: '왼쪽 테이블의 모든 행을 유지하고 매칭이 없으면 NULL로 채우는 JOIN은?', o: ['INNER JOIN', 'LEFT JOIN', 'CROSS JOIN', 'SELF JOIN'], a: 1, e: '"주문 없는 고객" = LEFT JOIN 후 오른쪽 키 IS NULL.', imp: 4, p: 55, s: '1차' },
+        { q: 'LEFT JOIN 후 WHERE 절에 오른쪽 테이블 컬럼 조건(o.status = "paid")을 걸면?', o: ['아무 영향 없다', 'NULL 행이 제거되어 사실상 INNER JOIN처럼 동작한다', '오류가 난다', 'FULL JOIN이 된다'], a: 1, e: '왼쪽 행을 유지하려면 그 조건을 ON 절로 옮긴다.', imp: 3, p: 40, s: '2차' },
+        { q: '점수 100, 90, 90, 80에 RANK()를 적용한 결과는?', o: ['1, 2, 3, 4', '1, 2, 2, 4', '1, 2, 2, 3', '1, 1, 2, 3'], a: 1, e: 'ROW_NUMBER = 1,2,3,4 / RANK = 1,2,2,4 / DENSE_RANK = 1,2,2,3.', imp: 3, p: 50, s: '1차' },
+        { q: '윈도우 함수가 GROUP BY와 다른 점은?', o: ['집계를 못 한다', '행을 줄이지 않고 각 행에 그룹별 계산 결과를 붙인다', 'WHERE에서만 쓴다', '정렬이 불가능하다'], a: 1, e: '고객별 최근 주문(ROW_NUMBER), 누적합, LAG 등.', imp: 4, p: 50, s: '1차' },
+        { q: '인덱스에 대한 설명으로 틀린 것은?', o: ['조회 속도를 높인다', '주로 B-Tree 구조를 쓴다', '많이 만들수록 INSERT/UPDATE도 빨라진다', '저장 공간을 추가로 쓴다'], a: 2, e: '쓰기 시 인덱스도 갱신 → 쓰기 성능 저하.', imp: 4, p: 50, s: '1차' },
+        { q: '트랜잭션 ACID의 A(Atomicity)의 의미는?', o: ['동시 실행 격리', '작업이 전부 반영되거나 전혀 반영되지 않음', '커밋 후 영구 저장', '제약 조건 유지'], a: 1, e: 'C 일관성, I 격리성, D 지속성.', imp: 3, p: 45, s: '1차' },
+        { q: '분석(OLAP)용 저장소가 열 기반(Columnar) 포맷을 쓰는 이유는?', o: ['행 단위 쓰기가 빨라서', '필요한 컬럼만 읽고 같은 타입끼리 압축률이 높아 대량 집계에 유리해서', '트랜잭션 처리를 위해', '인덱스가 필요 없어서'], a: 1, e: 'Parquet, BigQuery, DuckDB. OLTP(MySQL)는 행 기반.', imp: 3, p: 45, s: '2차' },
+        { q: '정형·반정형·비정형 원본을 객체 스토리지에 그대로 저렴하게 저장하는 곳은?', o: ['데이터 웨어하우스', '데이터 레이크', 'OLTP DB', '캐시'], a: 1, e: 'DW = 정제된 정형(Schema-on-Write), 레이크 = 원본(Schema-on-Read), 레이크하우스 = 레이크 + ACID.', imp: 3, p: 45, s: '2차' },
+        { q: 'ELT의 특징은?', o: ['적재 전에 모두 변환해야 한다', '원본을 먼저 적재하고 DW 내부에서 SQL로 변환해 원본 보존·재처리가 쉽다', '스트리밍 전용이다', 'DW를 쓰지 않는다'], a: 1, e: '클라우드 DW + dbt가 대표적.', imp: 3, p: 40, s: '2차' },
+        { q: '작업 간 의존성을 DAG로 정의하고 스케줄·재시도를 관리하는 도구는?', o: ['Kafka', 'Airflow', 'Redis', 'Spark'], a: 1, e: 'Kafka = 이벤트 스트리밍, Spark = 분산 처리 엔진.', imp: 3, p: 45, s: '2차' },
+        { q: '실시간 이벤트를 Producer → Topic → Consumer로 전달하며 재처리를 위해 보관하는 플랫폼은?', o: ['Airflow', 'Apache Kafka', 'dbt', 'Parquet'], a: 1, e: 'Partition 단위 병렬, Consumer Group으로 분산 소비.', imp: 3, p: 40, s: '2차' },
+        { q: '파이프라인의 멱등성(Idempotency)이란?', o: ['항상 빠르게 실행된다', '같은 작업을 여러 번 재실행해도 결과가 같다', '한 번만 실행할 수 있다', '병렬 실행이 불가능하다'], a: 1, e: '파티션 덮어쓰기·upsert로 재시도 시 중복 방지.', imp: 4, p: 50, s: '2차' },
       ],
     },
   ],

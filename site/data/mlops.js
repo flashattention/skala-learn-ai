@@ -6,7 +6,7 @@ registerField({
   icon: '🚀',
   color: '#0f766e',
   source: '교재: 6. 모델 서빙 및 AIOps 구성 (임성열) · SKALA 모델서빙·AIOps 통합가이드(HAIC 실습)',
-  desc: 'Training vs Serving, REST/gRPC/WebSocket, FastAPI·Pydantic·비동기·헬스체크·Lazy/Eager, MLflow Tracking·Registry·배포 게이트·Docker, 모니터링·드리프트 감지·자동 재학습, HAIC 실습의 "조용한 실패".',
+  desc: 'Training vs Serving, REST/gRPC/WebSocket, FastAPI·Pydantic·비동기·헬스체크·Lazy/Eager, MLflow Tracking·Registry·배포 게이트·Docker, 모니터링·드리프트 감지·자동 재학습, HAIC 실습의 "조용한 실패". [보충] Blue-Green·Canary·Kubernetes·Prometheus·CI/CD/CT.',
   units: [
     // ───────────────────────────── 1회차
     {
@@ -574,6 +574,84 @@ def run_aiops_cycle(recent_predictions):
         { q: '승격 여부 확인 없이 항상 [OK] 성공 로그를 남기면?', o: ['문제없다', '게이트 탈락 모델도 배포된 것처럼 기록되어 운영자가 오판한다', '서버가 느려진다', '재학습이 중단된다'], a: 1, e: '[빈칸 11] 챔피언/챌린저 — 게이트 통과 후에만 승격·성공 기록.', imp: 3, p: 45, s: '2차' },
         { q: '재학습 로그는 [OK]인데 /predict의 model_version이 그대로다. 원인은?', o: ['MLflow 장애', '서빙 캐시(_model_cache)에 예전 모델이 남아 있음', '네트워크 오류', '스케일러 오류'], a: 1, e: '승격 시 _model_cache = None으로 무효화, 응답에 실제 버전 표시.', imp: 4, p: 55, s: '2차' },
         { q: '드리프트 배치 요청이 타임아웃되는 원인과 개선책은?', o: ['데이터가 적어서 — 데이터 추가', 'fine-tuning이 요청 처리 중 동기로 실행됨 — BackgroundTasks 등으로 재학습을 응답과 분리', '포트 오류 — 포트 변경', 'Pydantic 오류 — 스키마 삭제'], a: 1, e: 'Day1 비동기 처리와 연결되는 개선 포인트.', imp: 3, p: 45, s: '2차' },
+      ],
+    },
+    // ───────────────────────────── 6회차 (보충)
+    {
+      id: 'ops6',
+      title: '[보충] 배포 전략·Kubernetes·모니터링 — Blue-Green·Canary·HPA·Prometheus',
+      goals: [
+        'Rolling·Blue-Green·Canary·Shadow·A/B 배포와 롤백 전략을 비교할 수 있다',
+        'Kubernetes 핵심 객체(Pod·Deployment·Service·HPA)와 Liveness/Readiness Probe를 설명할 수 있다',
+        'Prometheus·Grafana 기반 모니터링과 MLOps 성숙도·CI/CD/CT 개념을 설명할 수 있다',
+      ],
+      content: `
+:::deep 이 회차는 교재 외 보충입니다
+교재는 FastAPI·Docker·드리프트 중심이지만, 2차(실무) 면접에서는 "새 모델을 안전하게 배포하는 방법", "트래픽이 늘면 어떻게 확장하는가", "운영 중 무엇을 모니터링하는가"를 자주 묻는다.
+:::
+
+### 1. 배포 전략
+| 전략 | 방식 | 장점 | 단점 |
+|---|---|---|---|
+| Rolling | 인스턴스를 **하나씩 순차 교체** | 추가 자원 적음 (K8s 기본) | 교체 중 신·구 버전 공존, 롤백 느림 |
+| ==Blue-Green== | 동일한 새 환경(Green)을 띄우고 **트래픽을 한 번에 전환** | ==즉시 롤백==(Blue로 다시 전환), 무중단 | 자원 2배 |
+| ==Canary== | 새 버전에 **트래픽 일부(1→5→25→100%)만** 보내며 지표 확인 후 점진 확대 | 위험을 소수 사용자로 제한 | 라우팅·모니터링 체계 필요 |
+| ==Shadow (Mirroring)== | 실제 트래픽을 복제해 새 모델에도 보내되 **응답은 사용자에게 안 줌** | ==사용자 영향 0==으로 실데이터 검증 | 비용, 정답 지표는 나중에 |
+| ==A/B 테스트== | 사용자 그룹을 나눠 **비즈니스 지표(전환율 등)**를 통계적으로 비교 | 실제 효과 검증 | 기간·표본 필요 |
+:::key ML 모델 배포 흐름 예시
+오프라인 평가 통과 → ==Shadow==로 실트래픽 예측 분포·지연 확인 → ==Canary== 5%로 오류율·지연·비즈니스 지표 감시 → 이상 시 **자동 롤백**, 정상 시 100% → 모델 레지스트리(MLflow)에 버전·지표 기록해 언제든 이전 버전으로 복구.
+:::
+- Canary는 "**안정성(장애 여부)**" 확인 목적, A/B는 "**어느 쪽이 더 나은가(효과)**" 비교 목적
+
+### 2. Kubernetes 핵심
+- ==컨테이너 오케스트레이션==: 여러 서버에 걸쳐 컨테이너의 배포·확장·복구를 자동화 (Docker = 컨테이너 만들기, K8s = 많은 컨테이너 운영하기)
+| 객체 | 역할 |
+|---|---|
+| ==Pod== | 배포의 최소 단위 — 하나 이상의 컨테이너 묶음(같은 네트워크·스토리지 공유) |
+| ==Deployment== | 원하는 Pod 수(replicas)와 버전을 **선언**, 자동 복구·Rolling Update·롤백 |
+| ==Service== | Pod 집합에 **고정된 접근 주소 + 로드밸런싱** (Pod는 죽고 IP가 바뀌므로) |
+| Ingress | 외부 HTTP 트래픽을 도메인·경로별로 Service에 라우팅 |
+| ConfigMap / Secret | 설정 / 비밀값(API 키)을 이미지와 분리해 주입 |
+| ==HPA== | CPU·메모리·커스텀 지표(요청 수)에 따라 **Pod 수를 자동 확장/축소** |
+- ==선언적(Declarative)== 관리: "Pod 3개를 유지하라"고 선언하면 컨트롤러가 현재 상태를 원하는 상태로 계속 맞춘다(Self-healing)
+- ==Liveness Probe==: 살아 있나? 실패 시 **컨테이너 재시작** / ==Readiness Probe==: 요청 받을 준비 됐나? 실패 시 **트래픽에서 제외**(모델 로딩 중 등) — FastAPI의 \`/health\` 엔드포인트와 연결
+- GPU 서빙: 노드에 GPU 리소스 요청(resources.limits), 모델 로딩 시간이 길어 Readiness가 특히 중요
+
+### 3. 모니터링
+- ==Prometheus==: 서비스의 \`/metrics\` 엔드포인트를 주기적으로 **수집(pull)**하는 시계열 지표 DB, PromQL로 조회, Alertmanager로 알림
+- ==Grafana==: Prometheus 등 데이터를 **대시보드로 시각화** + 알림
+- 서비스 지표: 요청 수(RPS·QPS), ==지연(p50/p95/p99)==, 오류율, CPU/GPU·메모리 사용률 (Google SRE "4대 골든 시그널": Latency, Traffic, Errors, Saturation)
+- ==ML 지표==: 입력 데이터 분포(**데이터 드리프트**, PSI·KS), 예측 분포 변화, 실제 정답이 들어오면 성능(**컨셉 드리프트**), LLM은 토큰 사용량·비용·응답 품질
+- 로그(ELK·Loki), 분산 추적(OpenTelemetry·Jaeger), LLM은 LangSmith 등으로 체인 트레이싱
+- 평균보다 ==꼬리 지연(p99)==이 사용자 경험을 좌우 → SLO(예: p95 < 300ms) 설정
+
+### 4. CI/CD/CT와 MLOps 성숙도
+- ==CI==(Continuous Integration): 코드 변경 시 자동 테스트·빌드 / ==CD==(Delivery/Deployment): 자동 배포 / ==CT==(Continuous Training): 새 데이터·드리프트 감지 시 **자동 재학습** — ML에만 있는 개념
+- ML에서는 코드뿐 아니라 ==데이터·모델 버전==도 관리 (DVC, MLflow Model Registry)
+- Google MLOps 성숙도: **Level 0** 수동(노트북→수동 배포) → **Level 1** 파이프라인 자동화 + CT → **Level 2** 파이프라인 자체의 CI/CD 자동화
+- 도구 예: GitHub Actions(CI/CD), Airflow·Kubeflow Pipelines(워크플로), Feature Store(학습/서빙 특성 일관성 → Training-Serving Skew 방지)
+`,
+      iv: [
+        { q: '새 모델을 운영 환경에 안전하게 배포하려면 어떻게 하시겠어요?', a: '먼저 오프라인 평가와 테스트를 통과한 모델을 모델 레지스트리에 버전과 지표를 함께 등록합니다. 그다음 Shadow 배포로 실제 트래픽을 복제해 새 모델에도 보내되 응답은 기존 모델 것을 주면서 예측 분포와 지연을 확인합니다. 문제가 없으면 Canary로 트래픽의 5% 정도만 새 모델에 보내 오류율, p95 지연, 비즈니스 지표를 모니터링하고 단계적으로 늘립니다. 이상이 감지되면 자동으로 이전 버전으로 롤백하고, 효과 비교가 필요하면 A/B 테스트로 통계적으로 검증합니다. 빠른 롤백이 중요하면 Blue-Green으로 트래픽을 한 번에 전환·복구할 수 있게 합니다.', imp: 5, p: 80, s: '2차' },
+        { q: 'Blue-Green 배포와 Canary 배포의 차이를 설명해 주세요.', a: 'Blue-Green은 기존 환경(Blue)과 동일한 새 환경(Green)을 따로 띄운 뒤 트래픽을 한 번에 전환하는 방식으로, 문제가 생기면 다시 Blue로 즉시 돌릴 수 있어 롤백이 빠르지만 자원이 두 배 필요합니다. Canary는 새 버전에 트래픽의 일부만 보내고 지표를 보며 점진적으로 비율을 늘리는 방식으로, 문제가 생겨도 영향받는 사용자가 소수로 제한되지만 트래픽 분할 라우팅과 모니터링 체계가 필요합니다.', imp: 4, p: 70, s: '2차' },
+        { q: 'Kubernetes의 Pod, Deployment, Service, HPA를 설명해 주세요.', a: 'Pod는 하나 이상의 컨테이너를 묶은 배포의 최소 단위입니다. Deployment는 원하는 Pod 개수와 이미지 버전을 선언해 두면 Pod가 죽었을 때 자동으로 다시 띄우고 Rolling Update와 롤백을 관리합니다. Pod는 재생성될 때마다 IP가 바뀌므로 Service가 Pod 집합에 고정된 접근 주소와 로드밸런싱을 제공합니다. HPA는 CPU 사용률이나 요청 수 같은 지표에 따라 Pod 개수를 자동으로 늘리고 줄여 트래픽 변화에 대응합니다.', imp: 4, p: 65, s: '2차' },
+        { q: 'Liveness Probe와 Readiness Probe의 차이는 무엇인가요?', a: 'Liveness Probe는 컨테이너가 살아 있는지를 확인해 실패하면 Kubernetes가 컨테이너를 재시작합니다. 프로세스가 데드락에 걸려 응답하지 않는 경우를 복구합니다. Readiness Probe는 요청을 받을 준비가 되었는지를 확인해 실패하면 재시작하지 않고 Service의 트래픽 대상에서만 제외합니다. ML 서빙에서는 대형 모델을 메모리에 올리는 데 시간이 걸리므로, 로딩이 끝나기 전에는 Readiness를 실패시켜 요청이 들어오지 않게 하는 것이 중요합니다.', imp: 3, p: 55, s: '2차' },
+        { q: 'ML 서비스를 운영할 때 무엇을 모니터링해야 하나요?', a: '두 층위로 봅니다. 시스템 측면에서는 요청량, p95·p99 지연, 오류율, CPU·GPU·메모리 사용률 같은 골든 시그널을 Prometheus로 수집하고 Grafana 대시보드와 알림으로 관리합니다. 모델 측면에서는 입력 데이터 분포 변화(데이터 드리프트, PSI·KS 검정), 예측값 분포 변화, 정답이 수집되면 실제 성능 저하(컨셉 드리프트)를 감시하고, 임계치를 넘으면 재학습 파이프라인(CT)을 트리거합니다. LLM 서비스라면 토큰 사용량과 비용, 응답 품질과 가드레일 차단율도 추가로 봅니다.', imp: 5, p: 75, s: '2차' },
+        { q: 'CI/CD와 CT(Continuous Training)의 차이는 무엇인가요?', a: 'CI는 코드가 변경될 때마다 자동으로 테스트하고 빌드하는 것이고, CD는 검증된 결과물을 자동으로 배포 환경에 전달·배포하는 것입니다. CT는 ML에만 있는 개념으로, 새 데이터가 쌓이거나 드리프트가 감지되면 모델을 자동으로 재학습하고 평가해 배포 후보로 올리는 것입니다. ML 시스템은 코드뿐 아니라 데이터와 모델도 바뀌기 때문에 DVC나 MLflow로 데이터·모델 버전까지 관리해야 재현성과 롤백이 보장됩니다.', imp: 4, p: 60, s: '2차' },
+      ],
+      quiz: [
+        { q: '새 환경을 별도로 띄운 뒤 트래픽을 한 번에 전환하고, 문제 시 즉시 되돌릴 수 있는 배포 전략은?', o: ['Rolling', 'Blue-Green', 'Canary', 'Shadow'], a: 1, e: '장점: 즉시 롤백·무중단 / 단점: 자원 2배.', imp: 4, p: 55, s: '2차' },
+        { q: '새 모델에 트래픽의 5%만 보내며 지표를 보고 점진적으로 확대하는 전략은?', o: ['Blue-Green', 'Canary', 'Recreate', 'Big Bang'], a: 1, e: '탄광의 카나리아처럼 소수로 위험을 먼저 감지.', imp: 4, p: 60, s: '2차' },
+        { q: '실트래픽을 복제해 새 모델로 보내되 사용자에게는 기존 모델 응답만 주는 방식은?', o: ['A/B 테스트', 'Shadow(Mirroring) 배포', 'Canary', 'Rolling'], a: 1, e: '사용자 영향 0으로 실데이터 검증.', imp: 3, p: 50, s: '2차' },
+        { q: 'Canary 배포와 A/B 테스트의 주된 목적 차이는?', o: ['같은 것이다', 'Canary는 안정성(장애 여부) 확인, A/B는 두 버전의 효과(비즈니스 지표) 비교', 'Canary는 효과 비교, A/B는 장애 확인', '둘 다 비용 절감'], a: 1, e: 'A/B는 통계적 유의성을 위해 기간·표본이 필요.', imp: 3, p: 45, s: '2차' },
+        { q: 'Kubernetes에서 배포의 최소 단위는?', o: ['Node', 'Pod', 'Service', 'Namespace'], a: 1, e: 'Pod = 하나 이상의 컨테이너 묶음.', imp: 3, p: 45, s: '2차' },
+        { q: 'Pod가 재생성되어 IP가 바뀌어도 고정된 주소와 로드밸런싱을 제공하는 객체는?', o: ['Deployment', 'Service', 'ConfigMap', 'Secret'], a: 1, e: '외부 HTTP 라우팅은 Ingress.', imp: 3, p: 45, s: '2차' },
+        { q: '트래픽(CPU 사용률)에 따라 Pod 수를 자동 조절하는 것은?', o: ['HPA (Horizontal Pod Autoscaler)', 'Ingress', 'PersistentVolume', 'Liveness Probe'], a: 0, e: 'Scale-out(수평 확장).', imp: 4, p: 50, s: '2차' },
+        { q: '모델 로딩이 끝나기 전 요청을 받지 않게 하려면 설정해야 하는 것은?', o: ['Liveness Probe', 'Readiness Probe', 'HPA', 'Secret'], a: 1, e: 'Readiness 실패 → 트래픽에서 제외(재시작은 안 함). Liveness 실패 → 재시작.', imp: 3, p: 45, s: '2차' },
+        { q: 'Prometheus의 동작 방식으로 옳은 것은?', o: ['로그 파일 전문 검색 엔진', '서비스의 /metrics를 주기적으로 수집(pull)하는 시계열 지표 DB', '대시보드 전용 도구', '컨테이너 런타임'], a: 1, e: '시각화는 Grafana, 알림은 Alertmanager.', imp: 3, p: 45, s: '2차' },
+        { q: '사용자 체감 지연을 볼 때 평균보다 중요하게 보는 지표는?', o: ['최소 지연', 'p95/p99 꼬리 지연', 'CPU 온도', '배포 횟수'], a: 1, e: '평균은 소수의 매우 느린 요청을 가린다.', imp: 3, p: 45, s: '2차' },
+        { q: '새 데이터나 드리프트 감지 시 모델을 자동 재학습하는 MLOps 개념은?', o: ['CI', 'CD', 'CT (Continuous Training)', 'TDD'], a: 2, e: 'Google MLOps Level 1의 핵심.', imp: 4, p: 50, s: '2차' },
+        { q: '학습 때와 서빙 때 특성 계산 방식이 달라 성능이 떨어지는 문제를 막는 데 쓰는 것은?', o: ['Feature Store', 'Load Balancer', 'CDN', 'Ingress'], a: 0, e: 'Training-Serving Skew 방지 — 같은 특성 정의를 학습·서빙에서 공유.', imp: 3, p: 40, s: '2차' },
       ],
     },
   ],

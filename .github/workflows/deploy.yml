@@ -1,0 +1,65 @@
+# main에 push → 콘텐츠 검증 → Firebase Hosting + Firestore 규칙 자동 배포
+# PR → 검증 + 7일짜리 미리보기 채널 배포(링크가 PR 댓글로 달림)
+# 필요한 저장소 Secret: FIREBASE_SERVICE_ACCOUNT_SKALA_LEARN_AI (서비스 계정 JSON 키 전체) — README 참고
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 콘텐츠 검증
+        run: node scripts/validate.mjs
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://skala-learn-ai.web.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 서비스 계정 키 준비
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SKALA_LEARN_AI }}' > "$RUNNER_TEMP/sa.json"
+      - name: Hosting + Firestore 규칙 배포
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+        run: npx --yes firebase-tools@14 deploy --only hosting,firestore:rules --project skala-learn-ai --non-interactive --message "${{ github.sha }}"
+      - name: 키 삭제
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"
+
+  preview:
+    # 포크에서 온 PR은 Secret에 접근할 수 없으므로 같은 저장소 PR만
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SKALA_LEARN_AI }}
+          projectId: skala-learn-ai
+          expires: 7d

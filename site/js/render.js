@@ -32,7 +32,8 @@ export function inline(s) {
   });
   t = t
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/==([^=]+)==/g, '<mark class="hl-key">$1</mark>')
+    // 안쪽에 = 가 있어도 되도록(예: ==A = B==), 단 공백으로 둘러싸인 비교 연산자 " == " 는 구분자로 보지 않음
+    .replace(/==(?=\S)(.+?)(?<=\S)==/g, '<mark class="hl-key">$1</mark>')
     .replace(/!!([^!]+)!!/g, '<mark class="hl-iv">$1</mark>');
   t = t.replace(/\u0000(\d+)\u0000/g, (_, i) => '<code>' + codes[+i] + '</code>');
   return t;
