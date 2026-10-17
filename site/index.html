@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SK AX 면접 대비 · AI/Data Engineer</title>
+  <meta name="description" content="SKALA 교재 기반 SK AX AI/Data 엔지니어 1·2차 면접 기술 질문 학습 사이트" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+  <header class="topbar" id="topbar" hidden>
+    <a class="brand" href="#/">
+      <span class="brand-logo">🎯</span>
+      <span class="brand-text"><b>SK AX 면접 대비</b><small>AI/Data Engineer · SKALA 교재 기반</small></span>
+    </a>
+    <nav class="nav" id="nav">
+      <a href="#/" data-nav="home">대시보드</a>
+      <a href="#/learn" data-nav="learn">분야별 학습</a>
+      <a href="#/notes" data-nav="notes">오답노트 <span class="pill" id="noteCount">0</span></a>
+      <a href="#/history" data-nav="history">기록</a>
+      <a href="#/mock" data-nav="mock">모의면접</a>
+      <a href="#/search" data-nav="search" title="검색">🔍</a>
+    </nav>
+    <div class="user-area">
+      <button class="icon-btn" id="themeBtn" title="다크/라이트 모드">🌓</button>
+      <div class="user-chip" id="userChip"></div>
+    </div>
+    <button class="icon-btn menu-btn" id="menuBtn" aria-label="메뉴">☰</button>
+  </header>
+
+  <main id="app" class="app"></main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- 콘텐츠 데이터 (분야별) -->
+  <script src="data/registry.js"></script>
+  <script defer src="data/python.js"></script>
+  <script defer src="data/ml.js"></script>
+  <script defer src="data/dl.js"></script>
+  <script defer src="data/vectordb.js"></script>
+  <script defer src="data/genai.js"></script>
+  <script defer src="data/agent.js"></script>
+  <script defer src="data/mlops.js"></script>
+
+  <!-- 앱 -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
