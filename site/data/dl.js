@@ -115,7 +115,7 @@ W_new = W_t − η · ∂E/∂W_t
 |---|---|
 | 너무 작음 | 촘촘하지만 ==학습 시간이 오래 걸림== (아장아장) |
 | 너무 큼 | 손실 그래프를 벗어남 — ==Over-shooting==, 발산 |
-| 적정 | 10⁻⁵ 수준 비율로 시작해 튜닝. 초기엔 크게 탐색, 최적점 근처에선 작게(학습률 스케줄링) |
+| 적정 | 문제·옵티마이저별로 다름 — 흔한 출발점: Adam 1e-3, 사전학습 모델 파인튜닝 1e-5~5e-5. 초기엔 크게 탐색, 최적점 근처에선 작게(학습률 스케줄링·Warmup) |
 
 :::warn 경사하강법의 한계
 지역 정보(현재 경사)만 사용 → ==Local Minimum==(중간 계곡)에 빠질 수 있고, 완만한 구간(plateau·saddle point)에서 느려지며, 출발 위치에 민감 → 항상 정답(Global Minimum)으로 가는 것은 아니다.
@@ -341,7 +341,7 @@ MLP(Multi-Layer Perceptron): 한 층의 모든 뉴런이 다음 층 모든 뉴�
 출력 크기 = (N + 2P − F) / S + 1      (N 입력, P 패딩, F 필터, S 스트라이드)
 예) 5×5 입력, 3×3 필터, P=1, S=1 → (5 + 2 − 3)/1 + 1 = 5   (크기 유지 "same")
 Softmax: P(y=i) = e^{z_i} / Σ_j e^{z_j}
-예) 로짓 [-0.1, 3.8, 1.1, -0.3] → 확률 [0.02, 0.91, 0.06, 0.01] → B로 분류
+예) 로짓 [-0.1, 3.8, 1.1, -0.3] → 확률 [0.018, 0.906, 0.061, 0.015] → B로 분류
 ~~~
 - 전체 구조: ==[(Conv × α + Activation) × β + Pooling] × γ + FC(Flatten) + Dense(Softmax)== — 특징 추출(Conv) → 중요한 것만 추림(Pooling) → 펼침(FC) → 최종 분류(Dense)
 - 비전 태스크: Classification(무엇) → Localization(+bounding box) → Object Detection(여러 객체) → Segmentation(윤곽·픽셀 단위)
@@ -354,7 +354,7 @@ Softmax: P(y=i) = e^{z_i} / Σ_j e^{z_j}
 | 2014 | VGGNet | 작은 3×3 필터로 구조 단순화, 19층 |
 | 2014 | GoogLeNet (Inception) | Inception 모듈로 계산 효율 + 정확도, 22층 |
 | ==2015== | ==ResNet== | ==Residual Learning==으로 최대 152층, 깊이의 한계 돌파 |
-| 2017 | DenseNet / YOLO | 모든 층을 서로 연결 / 실시간 객체 탐지 |
+| 2016~17 | YOLO / DenseNet | 실시간 객체 탐지(2016) / 모든 층을 서로 연결(2017) |
 | 2018~19 | EfficientNet | 깊이·폭·해상도를 균형 있게 스케일링 |
 | 2021 | ViT | Transformer를 이미지 분류에 적용해 CNN을 능가할 수 있음을 입증 |
 
@@ -390,7 +390,7 @@ Softmax: P(y=i) = e^{z_i} / Σ_j e^{z_j}
         { q: '7×7 입력에 3×3 필터, padding 0, stride 2를 적용한 출력 크기는?', o: ['2×2', '3×3', '5×5', '7×7'], a: 1, e: '(7 + 0 − 3)/2 + 1 = 3.', imp: 3, p: 45, s: '1차' },
         { q: 'Pooling Layer에 대한 설명으로 옳은 것은?', o: ['학습 가능한 가중치가 매우 많다', '대표값(주로 Max)을 추출해 크기를 줄이며 학습 파라미터가 없다', '이미지를 1차원으로 펼친다', '출력을 확률로 바꾼다'], a: 1, e: 'Max-pooling 주로 사용, 파라미터 없음. 펼치기는 Flatten, 확률은 Softmax.', imp: 4, p: 60, s: '1차' },
         { q: 'Padding을 사용하는 주된 목적은?', o: ['채널 수를 늘리기 위해', '합성곱 후 줄어드는 출력 크기를 보정하기 위해', '학습률을 조절하기 위해', '과적합을 늘리기 위해'], a: 1, e: '입력 가장자리에 주로 0을 채움(Zero-padding).', imp: 3, p: 50, s: '1차' },
-        { q: 'Softmax 출력의 특징은?', o: ['합이 항상 1인 확률 분포', '항상 0 또는 1', '음수가 나올 수 있다', '최댓값만 1이고 나머지는 원래 값'], a: 0, e: '로짓 [-0.1, 3.8, 1.1, -0.3] → [0.02, 0.91, 0.06, 0.01].', imp: 4, p: 55, s: '1차' },
+        { q: 'Softmax 출력의 특징은?', o: ['합이 항상 1인 확률 분포', '항상 0 또는 1', '음수가 나올 수 있다', '최댓값만 1이고 나머지는 원래 값'], a: 0, e: '로짓 [-0.1, 3.8, 1.1, -0.3] → [0.018, 0.906, 0.061, 0.015].', imp: 4, p: 55, s: '1차' },
         { q: 'AlexNet의 특징이 **아닌** 것은?', o: ['GPU를 사용한 대규모 학습', 'ReLU 도입', 'Dropout 사용', 'Residual Connection 도입'], a: 3, e: 'Residual Connection은 ResNet(2015).', imp: 3, p: 50, s: '1차' },
         { q: '층을 깊게 쌓았더니 학습 오차까지 오히려 커진 현상으로 ResNet이 해결한 문제는?', o: ['Overfitting', 'Degradation (깊이의 저주)', 'Data Leakage', 'Class Imbalance'], a: 1, e: 'Vanishing이나 과적합이 아닌 Degradation — BN·ReLU로도 해결 안 됨.', imp: 4, p: 60, s: '1차' },
         { q: 'ResNet의 Residual Block이 학습하는 대상은?', o: ['목표 출력 H(x) 전체', '변화량 F(x) = H(x) − x', '입력 x 그 자체', 'Softmax 확률'], a: 1, e: 'Skip Connection으로 x를 더하므로 블록은 잔차(변화량)만 학습. 필요 없으면 F(x)→0.', imp: 5, p: 70, s: '1차' },
@@ -547,8 +547,8 @@ GRU(Gated Recurrent Unit)는 LSTM을 단순화한 구조로, Cell State 없이 *
 |---|---|---|
 | 1985 | RNN | 시퀀스를 처리하는 첫 신경망 |
 | 1997 | LSTM | RNN의 기울기 소실 해결 |
-| 2014 | Word2Vec | 단어 임베딩 혁신 — 단어의 의미 관계를 연속 벡터로 학습 |
-| 2015 | Seq2Seq | 인코더-디코더로 기계번역 성능 향상 |
+| 2013 | Word2Vec | 단어 임베딩 혁신 — 단어의 의미 관계를 연속 벡터로 학습 |
+| 2014 | Seq2Seq | 인코더-디코더로 기계번역 성능 향상 (2015 Bahdanau·Luong Attention으로 확장) |
 | 2017 | Transformer | Self-Attention, RNN/LSTM 대체, 병렬 처리 |
 `,
       iv: [
@@ -567,7 +567,7 @@ GRU(Gated Recurrent Unit)는 LSTM을 단순화한 구조로, Cell State 없이 *
         { q: 'AE를 이상 탐지(Anomaly Detection)에 쓰는 원리는?', o: ['정상 데이터로 학습한 모델은 이상 데이터의 복원 오차가 크다', '이상 데이터만으로 학습한다', 'Softmax 확률로 판단한다', '잠재 차원을 0으로 만든다'], a: 0, e: '본 적 없는 패턴은 잘 복원 못 함 → 복원 오차 ↑.', imp: 4, p: 55, s: '2차' },
         { q: 'Seq2Seq와 Auto-Encoder의 차이는?', o: ['Seq2Seq는 입력을 그대로 복원, AE는 다른 시퀀스로 변환', 'AE는 입력을 복원, Seq2Seq는 입력을 (길이가 다를 수 있는) 다른 시퀀스로 변환', '둘은 동일하다', 'Seq2Seq는 이미지 전용'], a: 1, e: '번역·요약·챗봇에 사용.', imp: 3, p: 45, s: '1차' },
         { q: 'Seq2Seq의 결정적 한계로 Attention 등장의 배경이 된 것은?', o: ['파라미터가 너무 적다', '인코더의 마지막 Hidden State 하나(고정 길이 Context Vector)에 입력 전체를 압축하는 병목', 'Softmax를 쓸 수 없다', '양방향 처리만 가능'], a: 1, e: '긴 문장일수록 앞부분 정보 손실.', imp: 5, p: 70, s: '1차' },
-        { q: '단어의 의미 관계를 연속적인 벡터로 학습한 2014년의 임베딩 혁신은?', o: ['BERT', 'Word2Vec', 'GPT-2', 'TF-IDF'], a: 1, e: 'Word2Vec — 이후 Dense Embedding의 토대 (VectorDB 분야 연계).', imp: 3, p: 40, s: '1차' },
+        { q: '단어의 의미 관계를 연속적인 벡터로 학습한 2013년의 임베딩 혁신은?', o: ['BERT', 'Word2Vec', 'GPT-2', 'TF-IDF'], a: 1, e: 'Word2Vec — 이후 Dense Embedding의 토대 (VectorDB 분야 연계).', imp: 3, p: 40, s: '1차' },
       ],
     },
 
@@ -708,7 +708,7 @@ Transformer는 RNN처럼 순차적으로 처리하지 않고 ==모든 단어를 
 ### 3. Beyond Transformer — 두 갈래의 전략
 | 트랙 | 전략 | 대표 |
 |---|---|---|
-| ==Efficient-oriented== | Attention 구조 자체를 대체해 장문 처리·계산 효율 개선 (Linear Recurrent Models) | S4(2021), HyenaDNA, RetNet(2023), **Mamba**(2023, SSM + 하드웨어 효율), **DeltaNet**(2024), Gated DeltaNet, **Kimi Linear**(2025-11) |
+| ==Efficient-oriented== | Attention 구조 자체를 대체해 장문 처리·계산 효율 개선 (Linear Recurrent Models) | S4(2021), HyenaDNA, RetNet(2023), **Mamba**(2023, SSM + 하드웨어 효율), **DeltaNet**(2024), Gated DeltaNet, **Kimi Linear**(2025-10) |
 | ==Scaling-oriented== | 파라미터는 늘리되 실제 계산량은 최소화 (MoE) | Sparsely-Gated MoE(2017), GShard(2020), **Switch Transformer**(2021, 1조 파라미터급), GLaM / LLM: Mixtral 8×7B, DeepSeekMoE, Qwen3-Next |
 
 #### Linear Recurrent Models — 계산을 O(n)으로, 학습은 병렬로 (회의록 비유)
@@ -729,7 +729,7 @@ Transformer는 RNN처럼 순차적으로 처리하지 않고 ==모든 단어를 
 - 핵심 메시지: ==총 파라미터 수(용량)와 토큰당 활성 파라미터(계산량)를 분리==
 :::
 
-### 5. Kimi Linear (2025-11) — 하이브리드 아키텍처
+### 5. Kimi Linear (2025-10, Moonshot AI) — 하이브리드 아키텍처
 - ==KDA (Kimi Delta Attention)로 속도·메모리, MLA (Multi-head Latent Attention)로 전체 맥락, MoE로 확장==을 담당
 - **KDA**: DeltaNet의 h_t = h_{t−1} + Δ에 **망각 계수 α**를 더한 h_t = α·h_{t−1} + Δ → "무한정 길어지지 않게, 낡은 건 흐려지고 중요한 건 진하게, 그리고 빠르게"
 - **MLA**: 토큰마다 KV 원본을 통째로 보관(→ KV Cache 부담) 대신 **압축 요약본(Latent)**만 보관하고 필요 시 복원 → 메모리↓ 복원 부담↑ (Trade-off)

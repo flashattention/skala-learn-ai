@@ -1,7 +1,7 @@
 # SK AX AI/Data Engineer 면접 대비 학습 사이트
 
-SKALA 교재 10권을 바탕으로 만든 면접 대비 학습 사이트입니다.
-7개 분야 · 49개 회차 · 752문항(객관식 519 + 면접 서술형 233).
+SKALA 교재 12권을 바탕으로 만든 면접 대비 학습 사이트입니다.
+9개 분야 · 60개 회차 · 934문항(객관식 651 + 면접 서술형 283).
 제목에 `[보충]`이 붙은 회차는 교재에 없거나 짧게 다룬 면접 단골 주제(OOP, SQL·데이터 엔지니어링, K-means·PCA, LoRA·디코딩, 배포 전략·Kubernetes)를 보강한 것입니다.
 
 ## 폴더 구조
@@ -124,7 +124,7 @@ npx firebase-tools deploy        # 사이트 + firestore.rules 함께 배포
 | `functions/` | AI 면접 서버: `index.js`(Cloud Function·로그인·사용량 제한), `lib/interview.js`(프롬프트·채점), `lib/openai.js` |
 | `site/js/store.js` | 기록 저장(Firestore / localStorage, AI 면접 기록 포함)과 구글 인증 |
 | `site/js/render.js` | 콘텐츠용 미니 마크다운 렌더러 |
-| `site/data/*.js` | 분야별 콘텐츠 (python, ml, dl, vectordb, genai, agent, mlops) |
+| `site/data/*.js` | 분야별 콘텐츠 (python, ml, dl, vectordb, genai, rag, agent, capstone, mlops) |
 
 ## 문항 추가·수정
 `site/data/<분야>.js`의 각 회차 `quiz`(객관식)·`iv`(면접 서술형) 배열에 항목을 넣으면 됩니다.

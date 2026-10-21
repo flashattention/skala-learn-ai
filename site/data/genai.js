@@ -72,6 +72,13 @@ registerField({
 | Mistral | Mistral Large, Mixtral 8x22B | 하이브리드 | ==MoE(전문가 혼합)==로 크기 대비 연산 효율 |
 | Microsoft | Phi-3/4 | 오픈소스 | 소형 언어모델(SLM), 고품질 교과서식 데이터 |
 
+:::tip 2026년 기준 업데이트 — 모델 이름보다 "흐름"을 기억하자
+- 교재 표는 2024년 시점이다. 이후 각 벤더는 **추론(Reasoning) 모델을 주력 모델에 통합**하는 방향으로 갔다 — OpenAI GPT-5 계열(o 시리즈 통합), Anthropic Claude 4~5 계열, Google Gemini 2.5~3 계열.
+- 오픈 웨이트 진영은 **MoE가 표준**이 되었다 — Meta Llama 4, DeepSeek-V3/R1, Qwen3, Mistral 등.
+- 공통 트렌드: 100만 토큰급 컨텍스트, 네이티브 멀티모달, 에이전트·도구 사용 성능 경쟁, 소형 모델(SLM)의 고성능화.
+- 면접에서는 특정 버전 암기보다 "**용도·비용·지연·보안(온프레미스 가능 여부)으로 모델을 고르고, 평가셋으로 검증한다**"는 선택 기준을 말하는 것이 안전하다. 버전은 빠르게 바뀐다.
+:::
+
 ### 5. LLM 실습 포인트
 - **Hugging Face**: "NLP의 GitHub" — Model Hub(200만+), Datasets, Spaces. \`pipeline(task=..., model=...)\`로 text-classification, text-generation, question-answering, sentiment-analysis
 - ==\`max_length\` vs \`max_new_tokens\`==: max_length는 **입력+출력 전체** 토큰 상한, max_new_tokens는 **새로 생성할 토큰만** 제한(우선 적용)
@@ -484,7 +491,7 @@ Agent의 최종 결과를 자연어가 아닌 특정 포맷의 구조화 데이�
 #### Built-in Middleware
 | 미들웨어 | 핵심 |
 |---|---|
-| LLMToolEmulator | 도구 응답을 LLM이 대신 생성 (기본 모델 anthropic claude-3-5-sonnet), 특정 도구만 지정 가능 \`tools=["get_weather"]\` |
+| LLMToolEmulator | 도구 응답을 LLM이 대신 생성 (기본 에뮬레이터 모델은 Anthropic Claude Sonnet 계열 — 기본값이 LangChain 버전마다 바뀌므로 \`model=\`로 명시 권장), 특정 도구만 지정 가능 \`tools=["get_weather"]\` |
 | ==TodoListMiddleware== | 복잡한 요청을 **스스로 단계 계획·추적** — \`write_todos\` 도구로 todo 목록(pending→in_progress→completed)을 갱신하며 실행 → 품질↑ |
 | ==HumanInTheLoopMiddleware== | 중요 행동(메일 발송·결제) 전 사람 승인. \`interrupt_on={"send_email_tool": {"allowed_decisions": ["approve","edit","reject"]}, "read_email_tool": False}\`. **반드시 checkpointer와 함께** |
 | ==PIIMiddleware== | built-in 타입: email, credit_card, ip, mac_address, url / custom: 정규식 detector. 전략: **block**(에러), **redact**(완전 마스킹), **mask**(부분), **hash**. 적용 시점: apply_to_input / apply_to_output / apply_to_tool_results |

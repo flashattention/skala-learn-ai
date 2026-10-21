@@ -120,7 +120,7 @@ pip freeze > requirements.txt     # 버전 고정
 |---|---|---|
 | ==list== | 순서 O, 중복 O, 수정 가능(mutable). 내부 **동적 배열** | 인덱스 접근 O(1), 끝 append O(1)(amortized), ==중간/앞 삽입·삭제 O(n)== |
 | ==tuple== | 리스트와 유사하나 ==불변(immutable)== → **해시 가능**(dict 키·set 원소), 메모리 적고 빠름 | O(1) 접근 |
-| ==set== | 중복 제거, 순서 없음, **해시 테이블**. 합집합 \\|, 교집합 &, 차집합 − | 삽입·삭제·탐색 ==O(1)== |
+| ==set== | 중복 제거, 순서 없음, **해시 테이블**. 합집합 \\|, 교집합 &, 차집합 - | 삽입·삭제·탐색 ==O(1)== |
 | ==dict== | 키-값 해시맵, 키는 해시 가능(immutable)만, ==Python 3.7+ 삽입 순서 보장== | 조회 O(1)* |
 | ==deque== | 양방향 큐 — 실제로는 **고정 크기 배열 블록을 양방향으로 연결한 리스트**(linked list of arrays) → cache-friendly | ==양 끝 삽입·삭제 O(1)==, 중간 접근 O(n) |
 | defaultdict | 없는 키 접근 시 KeyError 대신 **기본값 자동 생성** (그룹핑·카운팅) | O(1) |
@@ -141,7 +141,7 @@ import bisect; nums = [1, 3, 5, 7, 9]; bisect.bisect_left(nums, 6)              
 ~~~
 
 :::key 자료구조가 데이터 분석 코드의 기반인 이유
-- ==Pandas DataFrame 내부 = dict[컬럼명 → NumPy 배열]== → dict를 이해하면 Pandas 동작 원리가 보인다
+- ==Pandas DataFrame ≈ dict[컬럼명 → 배열]== (개념 모델 — 실제 내부는 같은 dtype 컬럼을 Block으로 묶어 관리하는 BlockManager) → dict를 이해하면 컬럼 접근·추가 동작이 보인다
 - 컴프리헨션 = 빠른 전처리 (간단한 변환은 Pandas apply보다 빠를 때도)
 - Counter 하나로 value_counts 대체 (의존성 최소화)
 - ==제너레이터 = 스트리밍 파이프라인==: 수백만 행 CSV를 한꺼번에 올리지 않고 행 단위 처리
@@ -404,7 +404,7 @@ try:
 except ValidationError as e:
     print(e)                            # 어느 필드가 왜 실패했는지 상세
 ~~~
-- \`Field\`: \`gt/ge/lt/le\`, \`min_length/max_length\`, \`pattern\`(정규식), \`description\` / \`model_json_schema()\` → **OpenAPI 스키마 자동 생성**
+- \`Field\`: \`gt/ge/lt/le\`, \`min_length/max_length\`, \`pattern\`(정규식), \`description\` / \`model_json_schema()\` → **JSON Schema 생성** (FastAPI는 이를 OpenAPI 문서에 그대로 활용)
 
 :::iv 분석 파이프라인 검증 패턴 & 후속 과목 연결
 - CSV 행·API JSON 응답을 BaseModel로 일괄 검증 → 성공은 \`valid\`, 실패는 \`errors.append({'row': i, 'error': str(e)})\` → 잘못된 행 건너뛰기 vs 오류 집계 리포트 저장
@@ -550,7 +550,7 @@ def test_add(a, b, expected):
 - ==CPU bound 작업에서는 threading이 효과 없음==: 4개 스레드로 \`for _ in range(10**7)\`을 돌려도 실질적으로 하나씩 처리
 - ==I/O bound에서는 문제없음==: \`time.sleep\`, 네트워크·파일 대기 중에는 GIL이 해제되어 다른 스레드가 실행
 - ==NumPy 등 C 확장은 연산 중 GIL을 해제== → \`np.dot\`(BLAS)은 멀티스레드로 빠르게 동작
-- Python 3.13+에서 GIL을 끌 수 있는 free-threaded 빌드가 실험적으로 도입
+- GIL을 끌 수 있는 **free-threaded 빌드**: Python 3.13에서 실험적으로 도입 → 3.14부터 공식 지원(PEP 779). 단, 별도 빌드(python3.14t)이고 기본 배포판은 여전히 GIL이 있으며 일부 C 확장 호환성을 확인해야 함
 :::
 
 ### 3. threading vs multiprocessing

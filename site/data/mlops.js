@@ -1,6 +1,6 @@
 registerField({
   id: 'mlops',
-  order: 7,
+  order: 9,
   title: '모델 서빙 · MLOps · AIOps',
   short: '서빙·MLOps',
   icon: '🚀',
@@ -203,6 +203,7 @@ def get_model():                 # Lazy
     return model
 ~~~
 "정답은 없다 — 측정한 수치를 근거로 서비스 상황에 맞게 선택" (통합가이드 Q&A)
+- 참고: \`@app.on_event("startup")\`은 현재 FastAPI에서 deprecated — 최신 권장은 \`lifespan\`(asynccontextmanager로 시작 시 로드, 종료 시 정리; Agent Capstone 4회차 참고). 동작 원리(Eager 로드)는 같다
 :::
 - ==로깅==: \`logger.info(f"request received: text_len={len(req.text)}")\` — 요청·응답 로그는 장애 분석뿐 아니라 ==Day3 AIOps 지표 수집의 기반 데이터==
 - 실습 순서: 서버 실행(uvicorn) → /docs → /health로 모델 로딩 상태 확인 → /predict Try it out → 빈 문자열 등 오류 케이스로 422/400 확인
@@ -288,7 +289,7 @@ model = mlflow.pyfunc.load_model("models:/HAIC_Predictor/Production")
 - 모델을 v1, v2, v3로 등록하고 Stage를 ==None → Staging → Production==으로 관리
 - 시나리오: v1(RMSE $5.20, **게이트 미달**) → 이동평균(ma5, ma20) 피처 개선 → v2(RMSE $3.65, **게이트 통과**) → Production 승격
 - 서빙은 \`models:/HAIC_Predictor/Production\` URI로 로드 → ==새 버전이 승격되면 서버 재시작만으로 최신 모델 반영==, 게이트 탈락 버전은 Production에 오르지 못하고 ==기존 Production이 계속 서빙==
-- 참고: MLflow 3에선 Stage 방식이 deprecated → **alias**(\`models:/HAIC_Predictor@champion\`) 방식 권장 (동작은 함, FutureWarning)
+- 참고: Stage 방식은 **MLflow 2.9부터 deprecated**(3.x에서도 동작하지만 FutureWarning) → **alias**(\`models:/HAIC_Predictor@champion\`) 방식 권장
 :::
 
 ### 3. CI/CD for ML과 검증
@@ -341,7 +342,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
         { q: 'MLOps가 DevOps 대비 추가로 관리하는 대상은?', o: ['코드 버전', '데이터 버전과 실험 메타데이터(파라미터·지표·모델)', '서버 IP', 'UI 디자인'], a: 1, e: '재현에 코드 + 데이터 + 하이퍼파라미터가 모두 필요.', imp: 5, p: 65, s: '1차' },
         { q: 'MLOps 성숙도 Level 1의 특징은?', o: ['노트북 수동 학습, 파일 보관', 'MLflow로 실험 자동 기록 + Registry 버전 관리', '드리프트 시 자동 재학습 + 상시 감시', '모델 없음'], a: 1, e: 'Level 0 수동 / Level 1 파이프라인 자동화(Day2) / Level 2 CI/CD + 모니터링(Day3).', imp: 3, p: 50, s: '1차' },
         { q: 'MLflow Tracking으로 기록하는 것이 **아닌** 것은?', o: ['파라미터(log_param)', '지표(log_metric)', '모델 아티팩트(log_model)', '사용자 비밀번호'], a: 3, e: '실험별 파라미터·RMSE·아티팩트 기록.', imp: 2, p: 35, s: '1차' },
-        { q: 'FastAPI에서 Registry의 Production 모델을 버전 하드코딩 없이 로드하는 URI는?', o: ['runs:/latest/model', 'models:/HAIC_Predictor/Production', 'file:///model.pkl', 'mlflow://v2'], a: 1, e: '승격만 바꾸면 재시작으로 최신 Production 반영. (MLflow 3: @alias 권장)', imp: 4, p: 55, s: '1차' },
+        { q: 'FastAPI에서 Registry의 Production 모델을 버전 하드코딩 없이 로드하는 URI는?', o: ['runs:/latest/model', 'models:/HAIC_Predictor/Production', 'file:///model.pkl', 'mlflow://v2'], a: 1, e: '승격만 바꾸면 재시작으로 최신 Production 반영. (Stage는 MLflow 2.9부터 deprecated → @alias 권장)', imp: 4, p: 55, s: '1차' },
         { q: 'HAIC 시나리오에서 v1(RMSE $5.20)이 Production이 되지 못한 이유는?', o: ['코드 오류', 'RMSE ≤ $4.00 배포 게이트를 통과하지 못해서', 'Docker 미설치', '데이터 없음'], a: 1, e: '피처 개선 후 v2(RMSE $3.65)가 게이트 통과 → 승격.', imp: 3, p: 45, s: '1차' },
         { q: '새로 학습한 모델이 RMSE 게이트를 통과하지 못하면 서비스는?', o: ['서비스가 중단된다', '파이프라인이 멈추고 기존 Production 버전이 계속 서빙된다', '새 모델이 강제 배포된다', '모든 버전이 삭제된다'], a: 1, e: '나쁜 모델이 실수로 배포되는 상황을 자동 방지.', imp: 5, p: 65, s: '2차' },
         { q: '모델 성능 회귀(Regression) 테스트의 목적은?', o: ['회귀분석 모델만 테스트', '새 버전이 이전 Production보다 크게 나빠지지 않았는지 상대 비교', '코드 스타일 검사', '데이터 수집'], a: 1, e: '절대 기준(≤ $4.00) + 상대 기준(prod_rmse + 0.5 이내).', imp: 4, p: 55, s: '2차' },
@@ -537,7 +538,7 @@ def run_aiops_cycle(recent_predictions):
 | ==재학습 직후 다음 배치에서 또 드리프트 판정== | recent_predictions에 재학습 전 예측이 그대로 | 재학습 후 ==윈도우 초기화== 정책 |
 | 드리프트 배치 요청이 오래 걸리거나 타임아웃 | fine-tuning이 요청 처리 중 **동기 실행** | ==FastAPI BackgroundTasks== 등으로 재학습을 응답과 분리 |
 | [GATE FAILED] 후 mlflow 로드 실패 | 게이트 미통과로 Production 버전이 없음 | 기존 Production 유지가 정상 동작임을 이해, 원인 기록 |
-| MLflow stage FutureWarning | MLflow 3에서 stage deprecated | alias(\`@champion\`) 방식으로 전환 가능 |
+| MLflow stage FutureWarning | Stage는 MLflow 2.9부터 deprecated | alias(\`@champion\`) 방식으로 전환 가능 |
 | docker build가 매우 느림 | TensorFlow 이미지(1GB대) + 빌드 시 학습 수행 | 최초 1회 정상, 캐시 활용 |
 - 대시보드 "배포 완료"는 응답의 promoted 값만 보고 칠함 → ==실제 서빙 모델이 바뀌었는지는 /predict의 model_version으로 확인==
 - Q: fine-tuning 후 게이트 RMSE는 믿을 만한가? → 41행으로 만든 21개 시퀀스를 8:2로 나누면 검증 샘플 약 5개 → ==우연히 낮게 나올 수 있다== → 재학습 검증셋 확보 방안이 운영 설계의 핵심 / Q: RMSE 말고? → 정답 지연 시 KS·PSI로 입력 분포 감지

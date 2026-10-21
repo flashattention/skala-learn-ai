@@ -1,6 +1,6 @@
 registerField({
   id: 'agent',
-  order: 6,
+  order: 7,
   title: 'AI Agent 설계 및 구축',
   short: 'AI Agent',
   icon: '🤖',
@@ -25,7 +25,7 @@ registerField({
 | **Generative AI** | Single → Multi Modal → Actuation with Perception | LLM, DALL-E/Stable Diffusion, GPT-4V, Physical AI·로봇·자율주행 |
 | **AGI** | 인간 수준의 광범위·유연한 학습/추론 | 아직 실현 사례 없음 (그 너머 ASI 거론) |
 
-- 2025년 생성형 AI는 기대의 정점을 지나 "계몽기"로, 2026년 **Agentic AI는 기대의 정점(Peak of Inflated Expectations)**에 위치 (Gartner Hype Cycle). AI는 "답하는 도구"에서 =="작업을 직접 수행하고 위임받는 주체"==로 이동 중.
+- Gartner Hype Cycle 기준, 생성형 AI는 2025년 기대의 정점을 지나 **환멸의 골짜기(Trough of Disillusionment)**로 내려왔고, 그 자리를 **AI Agent / Agentic AI가 기대의 정점(Peak of Inflated Expectations)**으로 이어받았다 — "기대는 높지만 실제 성과 검증은 이제부터"라는 뜻. AI는 "답하는 도구"에서 =="작업을 직접 수행하고 위임받는 주체"==로 이동 중.
 
 ### 2. AI Agent의 정의
 | 개념 | 정의 |
