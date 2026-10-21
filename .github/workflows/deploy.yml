@@ -1,6 +1,7 @@
 # main에 push → 콘텐츠 검증 → Firebase Hosting + Firestore 규칙 자동 배포
 # PR → 검증 + 7일짜리 미리보기 채널 배포(링크가 PR 댓글로 달림)
 # 필요한 저장소 Secret: FIREBASE_SERVICE_ACCOUNT_SKALA_LEARN_AI (서비스 계정 JSON 키 전체) — README 참고
+# AI 면접 서버(functions/)는 별도 잡으로 배포하며, 실패(Blaze 미전환·OpenAI 키 미등록 등)해도 사이트 배포는 막지 않는다
 name: Deploy
 
 on:
@@ -42,6 +43,28 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
         run: npx --yes firebase-tools@14 deploy --only hosting,firestore:rules --project skala-learn-ai --non-interactive --message "${{ github.sha }}"
+      - name: 키 삭제
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"
+
+  deploy-functions:
+    if: github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 의존성 설치
+        run: npm ci --prefix functions
+      - name: 서비스 계정 키 준비
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SKALA_LEARN_AI }}' > "$RUNNER_TEMP/sa.json"
+      - name: AI 면접 Function 배포 (predeploy가 site/data를 functions/content로 복사)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+        run: npx --yes firebase-tools@14 deploy --only functions --project skala-learn-ai --non-interactive --message "${{ github.sha }}"
       - name: 키 삭제
         if: always()
         run: rm -f "$RUNNER_TEMP/sa.json"

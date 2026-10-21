@@ -1,5 +1,6 @@
 import { md, inline, esc } from './render.js';
 import { Progress, Auth } from './store.js';
+import { renderUnitAI, aiUnitStats } from './ai.js';
 
 // ── 데이터 인덱스 ──────────────────────────────────────────────
 const FIELDS = window.FIELDS || [];
@@ -274,6 +275,7 @@ function unitRow(u) {
     <div class="ur-actions">
       <a class="btn-ghost sm" href="#/unit/${u.id}/learn">학습</a>
       <a class="btn-ghost sm" href="#/unit/${u.id}/iv">면접 Q&A</a>
+      <a class="btn-outline sm" href="#/unit/${u.id}/ai">🎤 AI 면접</a>
       <a class="btn sm" href="#/unit/${u.id}/quiz">퀴즈</a>
     </div>
   </article>`;
@@ -286,7 +288,7 @@ function viewUnit(id, tab = 'learn') {
   const f = fieldById[u.fieldId];
   const idx = f.units.indexOf(u);
   const prev = f.units[idx - 1], next = f.units[idx + 1];
-  const tabs = [['learn', '📘 학습'], ['iv', '🎯 면접 Q&A'], ['quiz', '📝 퀴즈'], ['stats', '📊 기록']];
+  const tabs = [['learn', '📘 학습'], ['iv', '🎯 면접 Q&A'], ['ai', '🎤 AI 면접'], ['quiz', '📝 퀴즈'], ['stats', '📊 기록']];
   app.innerHTML = `
   <nav class="crumb"><a href="#/learn">분야별 학습</a> › <a href="#/field/${f.id}">${esc(f.title)}</a> › ${u.no}회차</nav>
   <header class="unit-head" style="--c:${f.color}">
@@ -302,6 +304,7 @@ function viewUnit(id, tab = 'learn') {
   const body = $('#unitBody');
   if (tab === 'learn') renderUnitLearn(u, body);
   else if (tab === 'iv') renderUnitIV(u, body);
+  else if (tab === 'ai') renderUnitAI(u, body, { auth, progress, toast });
   else if (tab === 'quiz') renderQuizSetup(u, body);
   else renderUnitStats(u, body);
 }
@@ -318,6 +321,7 @@ function renderUnitLearn(u, body) {
       <div class="learn-end">
         <button class="btn ${learned ? 'btn-done' : ''}" id="learnedBtn">${learned ? '✔ 학습 완료됨 (취소)' : '✅ 이 회차 학습 완료 표시'}</button>
         <a class="btn-outline" href="#/unit/${u.id}/iv">🎯 면접 Q&A 보기</a>
+        <a class="btn-outline" href="#/unit/${u.id}/ai">🎤 AI 면접 보기</a>
         <a class="btn-outline" href="#/unit/${u.id}/quiz">📝 퀴즈 풀기</a>
       </div>
     </article>
@@ -397,12 +401,20 @@ function renderQuizSetup(u, body, params = new URLSearchParams(location.hash.spl
 function renderUnitStats(u, body) {
   const s = unitStats(u);
   const qs = unitQuestions(u);
+  const ai = aiUnitStats(P(), u.id);
   body.innerHTML = `
   <section class="tiles">
     <div class="tile"><small>누적 맞춘 개수</small><b>${s.c}</b></div>
     <div class="tile"><small>누적 틀린 개수</small><b>${s.w}</b></div>
     <div class="tile"><small>누적 정답률</small><b>${pct(s.c, s.c + s.w)}<span>%</span></b></div>
     <div class="tile"><small>퀴즈 응시 / 최고 점수</small><b>${s.sessions.length}<span>회 · ${s.best}%</span></b></div>
+  </section>
+  <section class="panel">
+    <h3>🎤 AI 면접 기록</h3>
+    ${ai.count ? `<p class="muted small">${ai.count}회 응시 · 최고 ${ai.best}점 · 최근 ${ai.last.avg}점 · <a href="#/unit/${u.id}/ai">AI 면접 하러 가기</a></p>
+    <div class="table-wrap"><table><thead><tr><th>#</th><th>일시</th><th>문항</th><th>평균 점수</th></tr></thead><tbody>
+      ${[...ai.recs].reverse().map((r, i) => `<tr><td>${ai.count - i}</td><td>${fmtDate(r.ts)}</td><td>${r.items.length}</td><td><b>${r.avg}점</b></td></tr>`).join('')}
+    </tbody></table></div>` : `<p class="muted small">아직 AI 면접 기록이 없습니다. <a href="#/unit/${u.id}/ai">AI 면접 시작하기</a></p>`}
   </section>
   <section class="panel">
     <h3>회차 퀴즈 응시 기록</h3>
@@ -642,6 +654,12 @@ function viewHistory() {
     ${f.units.map((u) => { const s = unitStats(u); return `<tr><td><a href="#/unit/${u.id}/stats">${esc(unitLabel(u))}</a></td><td>${s.learned ? '✔' : ''}</td><td>${s.sessions.length}</td><td class="ok">${s.c}</td><td class="bad">${s.w}</td><td>${s.c + s.w ? pct(s.c, s.c + s.w) + '%' : '-'}</td><td>${s.last ? `${s.last.c}/${s.last.c + s.last.w}` : '-'}</td><td>${s.sessions.length ? s.best + '%' : '-'}</td></tr>`; }).join('')}
     </tbody></table></div>
   </section>`).join('')}
+  <section class="panel">
+    <h3>🎤 AI 면접 기록</h3>
+    ${(d.ai || []).length ? `<div class="table-wrap"><table><thead><tr><th>일시</th><th>회차</th><th>단계</th><th>문항</th><th>평균 점수</th></tr></thead><tbody>
+      ${[...d.ai].reverse().map((r) => `<tr><td>${fmtDate(r.ts)}</td><td>${unitById[r.unit] ? `<a href="#/unit/${r.unit}/ai">${esc(unitLabel(unitById[r.unit]))}</a>` : esc(r.unit)}</td><td>${esc(r.stage === 'mix' ? '실전형' : r.stage)}</td><td>${r.items.length}</td><td><b>${r.avg}점</b></td></tr>`).join('')}
+    </tbody></table></div>` : '<p class="muted small">아직 AI 면접 기록이 없습니다. 회차의 "🎤 AI 면접" 탭에서 시작해 보세요.</p>'}
+  </section>
   <section class="panel">
     <h3>전체 응시 로그</h3>
     ${d.sessions.length ? `<div class="table-wrap"><table><thead><tr><th>일시</th><th>종류</th><th>제목</th><th>맞춘</th><th>틀린</th><th>점수</th></tr></thead><tbody>

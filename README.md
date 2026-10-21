@@ -12,7 +12,8 @@ study_ai/
 ├── .firebaserc        # 기본 Firebase 프로젝트 (skala-learn-ai)
 ├── firestore.rules    # Firestore 보안 규칙
 ├── .github/workflows/ # GitHub Actions 자동 배포
-├── scripts/           # 콘텐츠 검증 스크립트 (node scripts/validate.mjs)
+├── functions/         # AI 면접 서버 (Firebase Cloud Function, OpenAI 호출)
+├── scripts/           # 검증(validate.mjs) · 로컬 개발 서버(dev-server.mjs) · 배포 전 콘텐츠 복사(sync-content.mjs)
 ├── site/              # 실제로 웹에 올라가는 사이트 (이 폴더만 공개됨)
 └── source/            # 교재 PDF (Git에 올리지 않음)
 ```
@@ -26,6 +27,38 @@ python3 -m http.server 8000
 # 브라우저에서 http://localhost:8000 → "게스트로 시작하기"
 ```
 게스트 기록은 이 브라우저(localStorage)에만 저장됩니다. 기록 페이지에서 JSON으로 백업·복원할 수 있습니다.
+
+## 🎤 AI 면접 (회차별)
+각 회차의 **🎤 AI 면접** 탭에서 AI 면접관이 그 회차 학습 내용을 바탕으로 **현업 신입 AI 엔지니어 면접 스타일** 질문(개념 → 비교 → 시나리오 → 설계)을 3·5·7개 차례로 합니다.
+답변하면 질문마다 **점수(100점) · 감점 이유 · 모범답안 · 이 답이 좋은 이유 · 꼬리질문**을 주고, 끝나면 종합 평가와 학습 가이드를 줍니다. 결과는 기록 탭에 저장됩니다.
+
+- 채점 기준(100점): 정확성 40 · 깊이 25 · 실무 연결 15 · 전달력 20. 합계는 서버가 계산합니다.
+- 모델: OpenAI `gpt-5.5` (기본값, 서버 환경변수 `OPENAI_MODEL`로 변경). 채점 품질·응답 속도를 `gpt-5.4-mini`/`gpt-5.4`와 비교해 정했습니다.
+- OpenAI API 키는 **서버에만** 두며 브라우저로 내려가지 않습니다. 정적 사이트가 키를 직접 쓰면 누구나 훔쳐 쓸 수 있기 때문입니다.
+- 기출 Q&A(`iv`)는 질문의 출제 의도 참고용으로만 쓰이고, 질문은 매번 새로 생성됩니다 (최근 3회 질문은 피함).
+
+### 로컬에서 쓰기
+프로젝트 루트 `.env`에 `OPENAI_API_KEY=sk-...`를 넣고 (선택: `OPENAI_MODEL=...`)
+```bash
+node scripts/dev-server.mjs        # http://localhost:8000  (포트 지정: node scripts/dev-server.mjs 8123)
+```
+정적 파일과 `/api/interview`를 함께 제공하며, 로컬에서는 로그인 없이(게스트 포함) 쓸 수 있습니다. 위의 `python3 -m http.server`로는 AI 면접만 동작하지 않습니다.
+
+### AI 면접 서버 배포 (최초 1회)
+Cloud Functions는 Firebase **Blaze(종량제) 요금제**가 필요합니다 (사용량이 적으면 Functions 비용은 거의 0이고, OpenAI 사용료만 듭니다).
+1. Firebase 콘솔 → 요금제를 **Blaze**로 업그레이드 (예산 알림 설정 권장)
+2. OpenAI 키를 Secret Manager에 등록 — 로컬 터미널에서:
+   ```bash
+   npx firebase-tools login
+   npx firebase-tools functions:secrets:set OPENAI_API_KEY --project skala-learn-ai   # 키 붙여넣기
+   ```
+3. 배포: `npx firebase-tools deploy --only functions` (또는 main에 push → Actions의 `deploy-functions` 잡)
+4. GitHub 배포용 서비스 계정(`github-deploy@…`)에 역할 추가: **Cloud Functions 관리자**, **서비스 계정 사용자**, **Secret Manager 접근자**, **Artifact Registry 관리자**(또는 쓰기 권한), **Cloud Build 편집자**. 필요한 API(Cloud Functions·Cloud Build·Artifact Registry·Secret Manager)는 첫 배포 때 켜집니다.
+   > `deploy-functions` 잡은 실패해도 사이트 배포를 막지 않습니다. Blaze 전환 전에는 이 잡만 빨간색으로 표시됩니다.
+
+- 호출은 **Google 로그인 사용자만** 가능하고, 사용자당 하루 150회(질문 생성·채점·총평 각 1회) 제한이 있습니다. 한도는 환경변수 `AI_DAILY_LIMIT`(0이면 무제한)로 조정합니다. 사용량은 Firestore `aiUsage` 컬렉션에 쌓이며 보안 규칙상 클라이언트는 접근할 수 없습니다.
+- 배포 전 `scripts/sync-content.mjs`가 `site/data`를 `functions/content`로 복사해 서버가 교재 본문을 읽게 합니다 (자동 실행, Git에는 올라가지 않음).
+- 프롬프트·채점 기준은 `functions/lib/interview.js`에서 고칩니다.
 
 ## 구글 로그인 켜기 (Firebase)
 설정값은 이미 `site/js/firebase-config.js`에 들어 있습니다. 새 프로젝트로 바꾸려면:
@@ -87,7 +120,9 @@ npx firebase-tools deploy        # 사이트 + firestore.rules 함께 배포
 |---|---|
 | `site/index.html`, `site/css/style.css` | 화면 (라이트/다크 모드, 모바일 대응) |
 | `site/js/app.js` | 라우터·대시보드·학습·퀴즈·오답노트·기록·모의면접·검색 |
-| `site/js/store.js` | 기록 저장(Firestore / localStorage)과 구글 인증 |
+| `site/js/ai.js` | 회차별 AI 면접 화면 (질문 → 답변 → 채점·모범답안 → 종합 평가) |
+| `functions/` | AI 면접 서버: `index.js`(Cloud Function·로그인·사용량 제한), `lib/interview.js`(프롬프트·채점), `lib/openai.js` |
+| `site/js/store.js` | 기록 저장(Firestore / localStorage, AI 면접 기록 포함)과 구글 인증 |
 | `site/js/render.js` | 콘텐츠용 미니 마크다운 렌더러 |
 | `site/data/*.js` | 분야별 콘텐츠 (python, ml, dl, vectordb, genai, agent, mlops) |
 

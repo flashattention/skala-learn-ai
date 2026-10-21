@@ -6,6 +6,8 @@ import { firebaseConfig, isFirebaseConfigured } from './firebase-config.js';
 const FB_VER = '10.12.2';
 const GUEST_KEY = 'skax-progress-guest';
 const MAX_SESSIONS = 800;
+const MAX_AI = 40; // 보관할 AI 면접 기록 수
+const AI_DETAIL_KEEP = 12; // 이 개수보다 오래된 기록은 답변·모범답안 본문을 지워 용량을 줄인다 (Firestore 문서 1MB 제한)
 
 export function emptyProgress() {
   return {
@@ -15,13 +17,14 @@ export function emptyProgress() {
     sessions: [], // { id, kind, title, unit, field, ts, end, c, w, total }
     learned: {}, // unitId -> ts
     bookmarks: {}, // qid -> ts
+    ai: [], // AI 면접 기록 { id, ts, unit, field, stage, avg, items: [{ q, type, a, s, bd, v, m, l, f }], summary }
   };
 }
 
 function normalize(p) {
   const base = emptyProgress();
   if (!p || typeof p !== 'object') return base;
-  return { ...base, ...p, answers: p.answers || {}, notes: p.notes || {}, sessions: p.sessions || [], learned: p.learned || {}, bookmarks: p.bookmarks || {} };
+  return { ...base, ...p, answers: p.answers || {}, notes: p.notes || {}, sessions: p.sessions || [], learned: p.learned || {}, bookmarks: p.bookmarks || {}, ai: p.ai || [] };
 }
 
 export function mergeProgress(a, b) {
@@ -43,11 +46,24 @@ export function mergeProgress(a, b) {
   if (out.sessions.length > MAX_SESSIONS) out.sessions = out.sessions.slice(-MAX_SESSIONS);
   for (const [k, v] of Object.entries(b.learned)) if (!out.learned[k]) out.learned[k] = v;
   for (const [k, v] of Object.entries(b.bookmarks)) if (!out.bookmarks[k]) out.bookmarks[k] = v;
+  const aiIds = new Set(out.ai.map((r) => r.id));
+  for (const r of b.ai) if (!aiIds.has(r.id)) out.ai.push(r);
+  out.ai = trimAI(out.ai);
   return out;
 }
 
 function hasData(p) {
-  return p && (Object.keys(p.answers || {}).length || (p.sessions || []).length || Object.keys(p.learned || {}).length);
+  return p && (Object.keys(p.answers || {}).length || (p.sessions || []).length || Object.keys(p.learned || {}).length || (p.ai || []).length);
+}
+
+// 오래된 AI 면접 기록은 점수·질문·총평만 남기고 본문을 지운다
+function trimAI(list) {
+  const out = [...list].sort((x, y) => x.ts - y.ts).slice(-MAX_AI);
+  out.forEach((r, i) => {
+    if (i >= out.length - AI_DETAIL_KEEP) return;
+    r.items = r.items.map((it) => ({ q: it.q, type: it.type, s: it.s, bd: it.bd, v: it.v }));
+  });
+  return out;
 }
 
 // ── 백엔드 ────────────────────────────────────────────────────
@@ -165,6 +181,11 @@ export class Progress {
     s.end = Date.now();
     this.touch();
   }
+  // AI 면접 결과 저장
+  addAI(rec) {
+    this.data.ai = trimAI([...(this.data.ai || []), rec]);
+    this.touch();
+  }
   resetAll() { this.data = emptyProgress(); this.touch(); }
   importData(obj) { this.data = mergeProgress(this.data, obj); this.touch(); }
 }
@@ -262,6 +283,12 @@ export class Auth {
     this.user = { uid: 'guest', name: '게스트', email: '', photo: '', guest: true };
     await this.progress.use(new LocalBackend(GUEST_KEY));
     if (emit) { this.ready = true; this.emit(); }
+  }
+
+  // 서버(Cloud Function)가 로그인 사용자를 확인할 때 쓰는 Firebase ID 토큰. 게스트면 null
+  async getIdToken() {
+    const u = this.fb && this.user && !this.user.guest ? this.fb.auth.currentUser : null;
+    return u ? u.getIdToken() : null;
   }
 
   async signOut() {

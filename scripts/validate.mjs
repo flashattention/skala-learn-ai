@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import vm from 'node:vm';
 import { md } from '../site/js/render.js';
+import { loadUnits } from '../functions/lib/content.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dataDir = path.join(root, 'site', 'data');
@@ -87,6 +88,17 @@ for (const fd of FIELDS) {
     }
   }
   console.log(`${fd.id.padEnd(9)} 단원 ${String(fd.units.length).padStart(2)} · 객관식 ${String(mcq).padStart(3)} · 면접 ${String(essay).padStart(3)}`);
+}
+
+// AI 면접 서버가 모든 회차를 읽을 수 있는지, 클라이언트·서버 리전 설정이 같은지 점검
+{
+  const all = loadUnits(dataDir);
+  if (all.size !== ids.size) err('ai', `AI 면접 서버가 읽은 회차 수(${all.size})와 사이트 회차 수(${ids.size})가 다릅니다`);
+  for (const u of all.values()) if (u.content.length < 200) err(`ai/${u.id}`, '서버에서 읽은 본문이 비어 있음');
+  const region = (f, re) => (readFileSync(path.join(root, f), 'utf8').match(re) || [])[1];
+  const a = region('site/js/ai.js', /const REGION = '([^']+)'/), b = region('functions/index.js', /region: '([^']+)'/);
+  if (!a || a !== b) err('ai', `site/js/ai.js(${a})와 functions/index.js(${b})의 region이 다릅니다`);
+  console.log(`ai        회차 ${all.size}개 로드 · region ${a}`);
 }
 
 if (errors.length) {

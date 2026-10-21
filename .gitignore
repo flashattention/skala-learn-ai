@@ -38,3 +38,10 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# ── Cloud Functions ──
+functions/node_modules/
+# 배포 직전 scripts/sync-content.mjs 가 만드는 사본
+functions/content/
+functions/.secret.local
+functions/.env.local
