@@ -39,6 +39,71 @@ export function inline(s) {
   return t;
 }
 
+// ── 코드 하이라이트 (외부 라이브러리 없이 정규식 토크나이저) ──
+// 각 규칙: [CSS 클래스 접미사, 정규식 소스(캡처 그룹 금지 → (?:) 사용)]. 앞의 규칙이 우선.
+const W = (words) => '\\b(?:' + words.split(' ').join('|') + ')\\b';
+const WI = (words) => W(words + ' ' + words.toUpperCase()); // 대소문자 무시 (SQL)
+const STR_DQ = '"(?:\\\\.|[^"\\\\\\n])*"';
+const STR_SQ = "'(?:\\\\.|[^'\\\\\\n])*'";
+const NUM = '\\b(?:0[xX][0-9a-fA-F]+|\\d[\\d_]*(?:\\.\\d+)?(?:[eE][+-]?\\d+)?j?)\\b';
+const LANGS = {
+  python: [
+    ['c', '#[^\\n]*'],
+    ['s', '(?:\\b[rRbBuUfF]{1,2})?(?:"""[\\s\\S]*?"""|\'\'\'[\\s\\S]*?\'\'\'|' + STR_DQ + '|' + STR_SQ + ')'],
+    ['d', '(?<=^[ \\t]*)@[\\w.]+'],
+    ['f', '(?<=\\b(?:def|class)\\s+)[A-Za-z_]\\w*'],
+    ['k', W('False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield match case')],
+    ['b', W('self cls print len range enumerate zip map filter sorted reversed sum min max abs any all isinstance issubclass type id hash iter next open list dict set tuple str int float bool bytes object super property classmethod staticmethod getattr setattr hasattr repr round format input vars dir callable frozenset slice Exception ValueError TypeError KeyError IndexError StopIteration RuntimeError NotImplementedError')],
+    ['n', NUM],
+    ['m', '[A-Za-z_]\\w*(?=\\()'],
+  ],
+  sql: [
+    ['c', '--[^\\n]*'],
+    ['s', STR_SQ],
+    ['k', WI('select from where group by having order limit offset join inner left right full outer cross on as and or not in is null like between case when then else end distinct with insert into values update set delete create table index view primary key foreign references drop alter union all exists over partition rows range preceding following current row asc desc')],
+    ['n', NUM],
+    ['m', '[A-Za-z_]\\w*(?=\\()'],
+  ],
+  bash: [
+    ['c', '(?<=^|\\s)#[^\\n]*'],
+    ['s', STR_DQ + '|' + STR_SQ],
+    ['v', '\\$(?:\\{[^}\\n]*\\}|\\w+)'],
+    ['k', W('if then else elif fi for in do done while case esac function export source sudo')],
+    ['a', '(?<=\\s)--?[\\w-]+'],
+    ['m', '(?<=^[ \\t]*|[|;&][ \\t]*)[\\w./-]+'],
+  ],
+  json: [
+    ['a', STR_DQ + '(?=\\s*:)'],
+    ['s', STR_DQ],
+    ['k', W('true false null')],
+    ['n', '-?' + NUM],
+  ],
+  dockerfile: [
+    ['c', '#[^\\n]*'],
+    ['k', '(?<=^[ \\t]*)(?:FROM|RUN|CMD|COPY|ADD|WORKDIR|ENV|ARG|EXPOSE|ENTRYPOINT|USER|LABEL|VOLUME|HEALTHCHECK|AS)\\b'],
+    ['s', STR_DQ + '|' + STR_SQ],
+    ['v', '\\$(?:\\{[^}\\n]*\\}|\\w+)'],
+    ['n', NUM],
+  ],
+};
+LANGS.py = LANGS.python; LANGS.sh = LANGS.shell = LANGS.bash; LANGS.docker = LANGS.dockerfile;
+const LANG_RE = {};
+
+export function highlight(code, lang) {
+  const rules = LANGS[String(lang || '').toLowerCase()];
+  if (!rules) return esc(code);
+  const re = LANG_RE[lang] || (LANG_RE[lang] = new RegExp(rules.map((r) => '(' + r[1] + ')').join('|'), 'gm'));
+  re.lastIndex = 0;
+  let out = '', last = 0, m;
+  while ((m = re.exec(code))) {
+    if (!m[0]) { re.lastIndex++; continue; }
+    const g = m.findIndex((v, i) => i > 0 && v !== undefined);
+    out += esc(code.slice(last, m.index)) + '<span class="tk-' + rules[g - 1][0] + '">' + esc(m[0]) + '</span>';
+    last = m.index + m[0].length;
+  }
+  return out + esc(code.slice(last));
+}
+
 function renderList(lines) {
   // lines: [{indent, ordered, text}]
   let html = '';
@@ -115,7 +180,7 @@ export function md(src) {
       i++;
       // 공통 들여쓰기 제거
       const ind = Math.min(...buf.filter((b) => b.trim()).map((b) => b.match(/^ */)[0].length), 99);
-      out += '<pre class="code"' + (lang ? ' data-lang="' + esc(lang) + '"' : '') + '><code>' + esc(buf.map((b) => b.slice(ind === 99 ? 0 : ind)).join('\n')) + '</code></pre>';
+      out += '<pre class="code"' + (lang ? ' data-lang="' + esc(lang) + '"' : '') + '><code>' + highlight(buf.map((b) => b.slice(ind === 99 ? 0 : ind)).join('\n'), lang) + '</code></pre>';
       continue;
     }
 

@@ -17,6 +17,9 @@
   --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 4px 16px rgba(16, 24, 40, .06);
   --radius: 14px;
   --code-bg: #f2f4f8;
+  /* 코드 하이라이트 (GitHub Light 계열) */
+  --tk-k: #cf222e; --tk-s: #0a3069; --tk-c: #6e7781; --tk-n: #0550ae; --tk-f: #8250df;
+  --tk-b: #953800; --tk-d: #8250df; --tk-m: #6639ba; --tk-a: #0550ae; --tk-v: #953800;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -24,12 +27,16 @@
     --bg: #0e1117; --bg2: #151924; --card: #171c27; --text: #e7eaf1; --muted: #98a2b3; --line: #273041;
     --key-bg: #5b4b00; --key-fg: #fff2a8; --iv-bg: #3a2a74; --iv-fg: #e2d6ff; --code-bg: #1f2533;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 18px rgba(0,0,0,.35); color-scheme: dark;
+    --tk-k: #ff7b72; --tk-s: #a5d6ff; --tk-c: #8b949e; --tk-n: #79c0ff; --tk-f: #d2a8ff;
+    --tk-b: #ffa657; --tk-d: #d2a8ff; --tk-m: #d2a8ff; --tk-a: #79c0ff; --tk-v: #ffa657;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0e1117; --bg2: #151924; --card: #171c27; --text: #e7eaf1; --muted: #98a2b3; --line: #273041;
   --key-bg: #5b4b00; --key-fg: #fff2a8; --iv-bg: #3a2a74; --iv-fg: #e2d6ff; --code-bg: #1f2533;
   --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 18px rgba(0,0,0,.35); color-scheme: dark;
+  --tk-k: #ff7b72; --tk-s: #a5d6ff; --tk-c: #8b949e; --tk-n: #79c0ff; --tk-f: #d2a8ff;
+  --tk-b: #ffa657; --tk-d: #d2a8ff; --tk-m: #d2a8ff; --tk-a: #79c0ff; --tk-v: #ffa657;
 }
 
 * { box-sizing: border-box; }
@@ -43,7 +50,23 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 code { background: var(--code-bg); padding: .08em .38em; border-radius: 5px; font-size: .9em; font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; }
 pre.code { background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; overflow-x: auto; font-size: 13.2px; line-height: 1.55; }
-pre.code code { background: none; padding: 0; }
+pre.code code { background: none; padding: 0; color: var(--text); }
+pre.code { position: relative; }
+pre.code[data-lang]:not([data-lang="text"]) { padding-top: 26px; }
+pre.code[data-lang]:not([data-lang="text"])::before {
+  content: attr(data-lang); position: absolute; top: 6px; right: 10px;
+  font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); font-family: inherit;
+}
+.tk-k { color: var(--tk-k); font-weight: 600; }
+.tk-s { color: var(--tk-s); }
+.tk-c { color: var(--tk-c); font-style: italic; }
+.tk-n { color: var(--tk-n); }
+.tk-f { color: var(--tk-f); font-weight: 600; }
+.tk-b { color: var(--tk-b); }
+.tk-d { color: var(--tk-d); }
+.tk-m { color: var(--tk-m); }
+.tk-a { color: var(--tk-a); }
+.tk-v { color: var(--tk-v); }
 .muted { color: var(--muted); }
 .small { font-size: .86em; }
 .ok { color: var(--ok); }
