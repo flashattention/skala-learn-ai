@@ -23,7 +23,11 @@ async function callInterview(auth, payload) {
   try {
     res = await fetch(ENDPOINT, { method: 'POST', headers, body: JSON.stringify({ data: payload }), signal: AbortSignal.timeout(110_000) });
   } catch (e) {
-    throw new Error(e.name === 'TimeoutError' ? 'AI 응답이 너무 오래 걸립니다. 다시 시도해 주세요.' : '서버에 연결하지 못했습니다. 네트워크를 확인해 주세요.');
+    if (e.name === 'TimeoutError') throw new Error('AI 응답이 너무 오래 걸립니다. 다시 시도해 주세요.');
+    // 함수가 배포되지 않은 경우 404 응답에 CORS 헤더가 없어 fetch 자체가 실패한다 → 오프라인과 구분해 안내
+    throw new Error(navigator.onLine === false
+      ? '인터넷 연결이 끊겨 있습니다. 네트워크를 확인해 주세요.'
+      : 'AI 면접 서버에 연결할 수 없습니다. 서버가 아직 준비되지 않았거나 일시적인 문제일 수 있으니 잠시 후 다시 시도해 주세요.');
   }
   const json = await res.json().catch(() => null);
   if (res.ok && json && json.result) return json.result;
