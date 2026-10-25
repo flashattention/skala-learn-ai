@@ -261,14 +261,14 @@ function unitRow(u) {
   const nq = (u.quiz || []).length, ni = (u.iv || []).length;
   const hot = unitQuestions(u).filter((q) => q.p >= 80).length;
   return `<article class="unit-row ${s.learned ? 'done' : ''}">
-    <div class="ur-no">${u.no}<small>회차</small></div>
+    <div class="ur-no">${u.no}<small>${s.learned ? '✔ 완료' : '회차'}</small></div>
     <div class="ur-body">
       <a class="ur-title" href="#/unit/${u.id}/learn">${esc(unitLabel(u))}</a>
       <div class="ur-meta">
         <span>☑ 객관식 ${nq}</span><span>🗣 면접 ${ni}</span><span>🔥 빈출 ${hot}</span>
         <span>누적 ⭕ ${s.c} · ❌ ${s.w}</span>
         ${s.last ? `<span>최근 ${s.last.c}/${s.last.c + s.last.w}</span>` : ''}
-        ${s.learned ? '<span class="ok">✔ 학습 완료</span>' : ''}
+        ${s.learned ? '<span class="ur-done">✔ 학습 완료</span>' : ''}
       </div>
       <div class="bar thin"><i style="width:${pct(s.answered, s.total)}%"></i></div>
     </div>
