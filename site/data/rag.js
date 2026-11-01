@@ -5,7 +5,6 @@ registerField({
   short: 'RAG Pipeline',
   icon: '📚',
   color: '#0891b2',
-  source: '교재: 생성형AI 6. RAG Pipeline 설계 및 구축 (배기주 / SK AX)',
   desc: 'RAG 필요성과 적용 평가, PREPROCESSING(Loader·Splitter·Embedding·Vector Index)과 RUNTIME(Retriever·Hybrid·Reranker·Prompt·Chain), Hit@K·MRR·LLM-as-a-Judge·RAGAS 평가, Naïve → Advanced → Self → Modular → Agentic RAG 확장 전략.',
   units: [
     // ───────────────────────────── 1회차
@@ -103,10 +102,10 @@ registerField({
         { q: 'RAG에서 Augmented 단계의 역할은?', o: ['질문을 벡터로 변환한다', '검색한 문서를 프롬프트에 추가해 모델이 활용하도록 보완한다', '모델 가중치를 업데이트한다', '최종 답변을 사용자에게 출력한다'], a: 1, e: 'Retrieval=검색, **Augmented=검색 결과를 프롬프트에 추가해 보완**, Generation=답변 생성.', imp: 4, p: 60, s: '1차' },
         { q: '2020년 Naïve RAG 논문이 지적한 파라메트릭 LLM의 한계가 **아닌** 것은?', o: ['지식 수정·확장 시 재학습이 필요하다', '응답의 출처를 알 수 없다', '존재하지 않는 정보를 생성할 수 있다', '자연어 문장을 생성할 수 없다'], a: 3, e: '한계는 ① 지식 갱신 어려움 ② 출처·설명 불가 ③ 환각. 문장 생성 자체는 잘한다.', imp: 4, p: 55, s: '1차' },
         { q: 'RAG에서 지식이 바뀌었을 때 일반적인 대응은?', o: ['모델 전체를 다시 학습한다', '문서 인덱스만 추가·교체한다', 'LoRA 어댑터를 새로 학습한다', '토크나이저를 교체한다'], a: 1, e: 'RAG의 핵심 장점 — **재학습 없이 인덱스만 갱신**하면 된다.', imp: 5, p: 70, s: '1차' },
-        { q: '교재의 기업 RAG 도입 과제 중 "기술 도입 전에 선행되어야 한다"고 강조한 것은?', o: ['GPU 클러스터 증설', '데이터 관리 체계의 재정비', 'LLM 모델 교체', '프론트엔드 개편'], a: 1, e: '중복·노후·불필요 문서가 혼재한 **사내 문서 체계의 비일관성**이 가장 큰 걸림돌 → 데이터 관리 체계 재정비 선행.', imp: 4, p: 55, s: '2차' },
-        { q: '필요한 정보가 DB에 없어 LLM이 부정확한 답을 생성할 때 교재의 1차 제안은?', o: ['Temperature를 높인다', '프롬프트로 "정보 없음"을 명시하도록 유도한다', '청크 크기를 늘린다', '임베딩 모델을 교체한다'], a: 1, e: '정보 누락 문제 → 프롬프트에서 **모르면 "모른다/정보 없음"이라고 답하도록** 지시.', imp: 3, p: 50, s: '1차' },
+        { q: '기업 RAG 도입 과제 중 "기술 도입 전에 선행되어야 한다"고 강조한 것은?', o: ['GPU 클러스터 증설', '데이터 관리 체계의 재정비', 'LLM 모델 교체', '프론트엔드 개편'], a: 1, e: '중복·노후·불필요 문서가 혼재한 **사내 문서 체계의 비일관성**이 가장 큰 걸림돌 → 데이터 관리 체계 재정비 선행.', imp: 4, p: 55, s: '2차' },
+        { q: '필요한 정보가 DB에 없어 LLM이 부정확한 답을 생성할 때 1차 대응은?', o: ['Temperature를 높인다', '프롬프트로 "정보 없음"을 명시하도록 유도한다', '청크 크기를 늘린다', '임베딩 모델을 교체한다'], a: 1, e: '정보 누락 문제 → 프롬프트에서 **모르면 "모른다/정보 없음"이라고 답하도록** 지시.', imp: 3, p: 50, s: '1차' },
         { q: 'LLM 출력이 지정 포맷을 지키지 못하거나 일부만 답할 때 적합한 대응은?', o: ['Output Parser·명시적 스키마·Output Validator 도입', 'Top-K를 1로 줄임', 'BM25를 제거', '청크 오버랩을 0으로 설정'], a: 0, e: '출력 형식 오류 → Output Parser, 불완전한 응답 → 명시적 스키마/Output Validator.', imp: 3, p: 45, s: '1차' },
-        { q: 'Karpathy의 LLM Wiki에 대한 교재의 평가로 옳은 것은?', o: ['기업 대규모 아카이브 검색용 RAG를 완전히 대체한다', '수백 개 문서 규모의 개인·팀 지식 관리 레이어로 RAG 위에 얹히는 도구다', 'Vector DB가 반드시 필요하다', '사람이 위키를 직접 유지보수한다'], a: 1, e: 'LLM Wiki는 RAG를 대체하지 않고 **상호 보완**. LLM Agent가 Ingest·Query·Lint로 위키를 유지보수한다.', imp: 2, p: 35, s: '2차' },
+        { q: 'Karpathy의 LLM Wiki에 대한 평가로 옳은 것은?', o: ['기업 대규모 아카이브 검색용 RAG를 완전히 대체한다', '수백 개 문서 규모의 개인·팀 지식 관리 레이어로 RAG 위에 얹히는 도구다', 'Vector DB가 반드시 필요하다', '사람이 위키를 직접 유지보수한다'], a: 1, e: 'LLM Wiki는 RAG를 대체하지 않고 **상호 보완**. LLM Agent가 Ingest·Query·Lint로 위키를 유지보수한다.', imp: 2, p: 35, s: '2차' },
         { q: '"RAG is Dead"에 대한 반박 근거로 가장 적절한 것은?', o: ['임베딩은 손실 압축이다', '100만 토큰 컨텍스트가 등장했다', '매번 전체 문서를 컨텍스트에 넣는 것은 비용·지연 면에서 비현실적이다', '에이전트가 도구를 직접 호출한다'], a: 2, e: '나머지 셋은 "대체된다" 측 근거. 반박: 기업 데이터는 모델에 없고, 전체 투입은 비용·지연상 비현실적이며 Long Context는 비용 구조만 바꾼다.', imp: 3, p: 45, s: '2차' },
         { q: '2026년 Enterprise RAG에서 검색 정확도 문제의 대안으로 도입이 급증한 구조는?', o: ['Dense only', 'Hybrid = Dense + Sparse + Reranking', 'Keyword only', 'Fine-tuning only'], a: 1, e: '벡터 단독의 한계로 **Hybrid(Dense+Sparse+Reranking)** 도입 의향이 한 분기 만에 3배 증가.', imp: 4, p: 55, s: '1차' },
         { q: '질의 복잡도를 분류해 검색·생성 전략을 스스로 조절하는 RAG 기법은?', o: ['Corrective RAG', 'Adaptive-RAG', 'Graph RAG', 'Naïve RAG'], a: 1, e: 'Adaptive-RAG = 질문 유형·난이도 분류 후 전략 조절. Corrective = 검색 품질 평가 후 웹검색 전환.', imp: 3, p: 45, s: '1차' },
@@ -220,15 +219,15 @@ splits = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100).spli
       quiz: [
         { q: 'RAG의 PREPROCESSING 단계에 속하지 **않는** 것은?', o: ['Document Loader', 'Text Splitter', 'Retriever', 'Embedding'], a: 2, e: 'PREPROCESSING = Loader → Splitter → Embedding → Vector DB. Retriever·Prompt·LLM·Chain은 RUNTIME.', imp: 5, p: 70, s: '1차' },
         { q: 'Document Loader 선택 시 고려사항이 **아닌** 것은?', o: ['한글 인코딩과 특수문자를 원형대로 가져오는가', '페이지·표 등 메타데이터를 어디까지 처리하는가', '다량 페이지 문서의 처리 속도', '생성 모델의 Temperature 설정'], a: 3, e: 'Loader는 텍스트 원형 보존, 메타데이터 처리 범위, 읽기 속도로 고른다.', imp: 3, p: 45, s: '1차' },
-        { q: '교재가 제시한 일반적인 Chunk Overlap 크기는?', o: ['청크 크기의 0%', '청크 크기의 10~20%', '청크 크기의 50%', '청크 크기의 100%'], a: 1, e: 'Overlap은 문맥 보존 ↔ 저장량·중복 검색 증가의 트레이드오프, 보통 **10~20%**.', imp: 4, p: 60, s: '1차' },
+        { q: '일반적으로 권장되는 Chunk Overlap 크기는?', o: ['청크 크기의 0%', '청크 크기의 10~20%', '청크 크기의 50%', '청크 크기의 100%'], a: 1, e: 'Overlap은 문맥 보존 ↔ 저장량·중복 검색 증가의 트레이드오프, 보통 **10~20%**.', imp: 4, p: 60, s: '1차' },
         { q: 'chunk_size=4, chunk_overlap=2로 [This, is, an, example, text]를 분할할 때 두 번째 청크는?', o: ['[example, text]', '[an, example, text]', '[is, an, example, text]', '[text]'], a: 1, e: '앞 청크의 마지막 2토큰(an, example)이 겹쳐 시작 → [an, example, text, …].', imp: 2, p: 35, s: '1차' },
         { q: '문단 단위로 먼저 나누고 최대 크기를 넘으면 문장·단어 단위로 다시 나누는 방식은?', o: ['Fixed-Size Chunking', 'Recursive Chunking', 'Document-based Chunking', 'Late Chunking'], a: 1, e: 'Recursive = 여러 구분자 수준으로 **계층적으로 반복 분할**. 구조 보존, 처리 시간·저장 증가.', imp: 4, p: 55, s: '1차' },
         { q: 'Late Chunking의 특징으로 옳은 것은?', o: ['인덱싱 시 가장 효율적이다', '원문 전체를 임베딩해 두고 질의 시점에 관련 부분을 분할한다', '구현이 가장 쉽다', '실시간 비용이 거의 없다'], a: 1, e: 'Late = 검색 이후에 분할. 문맥 손실 최소 vs 실시간 비용↑·구현 난이도↑·인덱싱 효율↓.', imp: 3, p: 40, s: '2차' },
-        { q: 'RAG의 정밀도와 재현율을 동시에 확보하고 싶을 때 교재가 권한 청킹 전략은?', o: ['Fixed-Size', 'Document-based', 'Hierarchical', 'Token Chunking'], a: 2, e: 'Hierarchical = 상위(섹션)+하위(문단) 청크 동시 생성 → 문맥 유지 + 세밀한 검색.', imp: 3, p: 45, s: '2차' },
+        { q: 'RAG의 정밀도와 재현율을 동시에 확보하고 싶을 때 권장되는 청킹 전략은?', o: ['Fixed-Size', 'Document-based', 'Hierarchical', 'Token Chunking'], a: 2, e: 'Hierarchical = 상위(섹션)+하위(문단) 청크 동시 생성 → 문맥 유지 + 세밀한 검색.', imp: 3, p: 45, s: '2차' },
         { q: 'RAG처럼 의미 구조가 중요한 경우에 적합한 순서는?', o: ['Tokenizer → Chunking', 'Chunking → Tokenizer', 'Embedding → Chunking', 'Reranker → Chunking'], a: 1, e: 'Chunking → Tokenizer: 문장·단락 기준으로 먼저 나눠 **의미 단위 유지**. Tokenizer → Chunking은 모델 입력 제한 중심.', imp: 3, p: 40, s: '1차' },
         { q: '청크 메타데이터 태깅의 목적으로 가장 거리가 먼 것은?', o: ['출처 추적', '권한·최신본 필터링', '검색 정확도 향상', '임베딩 차원 축소'], a: 3, e: 'source·page·section·updated_at·access_tag 등은 출처 추적과 필터링, 검색 정확도를 위한 것.', imp: 3, p: 50, s: '1차' },
         { q: '스캔 이미지로 된 표를 파싱할 때 적합한 방법은?', o: ['PdfPlumber 단독', 'OCR로 텍스트·좌표 추출 후 Y좌표 기준 행 재구성', '텍스트 레이어 복사', 'Fixed-Size Chunking'], a: 1, e: '스캔 문서는 텍스트 층이 없어 PdfPlumber 불가 → **OCR + Clustering**. 중첩 표는 VLM.', imp: 3, p: 45, s: '2차' },
-        { q: '교재의 전처리 TIP으로 옳지 **않은** 것은?', o: ['Baseline은 페이지 단위로 시작한다', '표는 캡션까지 묶고 각주는 분리한다', 'Header·Footer는 반복 검색 노이즈가 될 수 있어 Crop을 검토한다', '파싱 후 품질 검증은 생략해도 된다'], a: 3, e: '파싱 후 **품질 검증 필수** — 추출 실패, 빈 텍스트, 깨진 문자 비율 점검.', imp: 3, p: 45, s: '1차' },
+        { q: '전처리 TIP으로 옳지 **않은** 것은?', o: ['Baseline은 페이지 단위로 시작한다', '표는 캡션까지 묶고 각주는 분리한다', 'Header·Footer는 반복 검색 노이즈가 될 수 있어 Crop을 검토한다', '파싱 후 품질 검증은 생략해도 된다'], a: 3, e: '파싱 후 **품질 검증 필수** — 추출 실패, 빈 텍스트, 깨진 문자 비율 점검.', imp: 3, p: 45, s: '1차' },
         { q: '법령 문서 파싱에서 "앞 항", "이전 조항" 같은 암묵적 참조까지 처리할 수 있는 방식은?', o: ['규칙 기반 계층 파싱', 'LLM 기반 구조화', 'Fixed-Size Chunking', 'BM25'], a: 1, e: 'LLM 기반 구조화는 암묵적 참조를 처리하지만 비용·속도·환각이 단점. 규칙 기반은 참조를 해결하지 못함.', imp: 2, p: 35, s: '2차' },
       ],
     },
@@ -301,7 +300,7 @@ splits = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100).spli
 | 예 | FAISS | FAISS, Milvus | Qdrant, Weaviate, Milvus | FAISS(IVF-PQ), Milvus |
 
 - **nprobe** = 검색 시 탐색할 클러스터 수 → 크면 정확도↑ 속도↓
-- (참고) 교재 표는 PQ 예시로 Annoy(Spotify)도 들지만, Annoy는 양자화가 아니라 **랜덤 투영 트리** 기반 ANN이다. 실무에선 IVF와 PQ를 결합한 **IVF-PQ**가 대규모 메모리 절감용으로 흔하다
+- (참고) 일부 자료는 PQ 예시로 Annoy(Spotify)도 들지만, Annoy는 양자화가 아니라 **랜덤 투영 트리** 기반 ANN이다. 실무에선 IVF와 PQ를 결합한 **IVF-PQ**가 대규모 메모리 절감용으로 흔하다
 - **ANN**: 정답과 약간의 오차를 허용하고 근접한 결과를 빠르게 찾는 방법
 
 :::key Recall - Latency - Memory: 3축을 동시에 최적화할 수 없다
@@ -342,7 +341,7 @@ splits = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100).spli
         { q: 'Token, Embedding, Encoding에 대한 설명으로 옳은 것은?', o: ['Token은 숫자 벡터다', 'Embedding은 토큰을 벡터 공간으로 변환한 수치이고, Encoding은 문맥까지 반영한 표현이다', 'Embedding과 Encoding은 완전히 같다', 'Encoding은 문맥을 반영하지 않는다'], a: 1, e: 'Token=문자 조각, Embedding=정적 의미 벡터, Encoding=위치·문맥 반영(같은 단어도 문장마다 다름).', imp: 4, p: 55, s: '1차' },
         { q: 'One-Hot Encoding과 비교한 Learned Embedding의 특징은?', o: ['어휘 수만큼 차원이 커진다', '대부분 원소가 0이다', '낮은 차원의 dense 벡터로 의미적 관계를 학습한다', '단어 간 유사도를 표현할 수 없다'], a: 2, e: 'One-Hot은 고차원 sparse, Learned Embedding은 384~1,536 정도의 dense 벡터로 의미 관계를 학습.', imp: 3, p: 45, s: '1차' },
         { q: 'RAG 운영 중 임베딩 모델을 교체할 때 발생하는 비용은?', o: ['프롬프트만 수정하면 된다', '전체 문서 재임베딩과 인덱스 재구성', 'LLM 재학습', '비용이 발생하지 않는다'], a: 1, e: '임베딩 모델은 인덱스 구조와 운영 비용을 결정 → 교체 시 **전체 재임베딩 + 인덱스 재구성**.', imp: 4, p: 60, s: '1차' },
-        { q: '교재가 제시한 일반 Q&A·RAG 용도의 일반적인 임베딩 차원은?', o: ['64 ~ 128', '128 ~ 512', '768 ~ 1024', '4096 이상'], a: 2, e: '추천 64~128, 간단한 유사도 128~512, **일반 Q&A·RAG 768~1024**, 복합 문서 1024~1536.', imp: 2, p: 35, s: '1차' },
+        { q: '일반 Q&A·RAG 용도로 흔히 쓰는 임베딩 차원은?', o: ['64 ~ 128', '128 ~ 512', '768 ~ 1024', '4096 이상'], a: 2, e: '추천 64~128, 간단한 유사도 128~512, **일반 Q&A·RAG 768~1024**, 복합 문서 1024~1536.', imp: 2, p: 35, s: '1차' },
         { q: '차원의 저주(Curse of Dimensionality)에 대한 설명으로 옳은 것은?', o: ['차원이 낮을수록 거리 계산 신뢰도가 떨어진다', '차원이 높아질수록 거리 계산의 신뢰성이 떨어지고 유사도 판단이 어려워진다', '차원과 검색 비용은 무관하다', '차원이 높으면 항상 정확도가 오른다'], a: 1, e: '고차원에서는 데이터가 퍼지고 모든 벡터가 비슷해 보여 거리 기반 유사도의 신뢰도가 낮아진다.', imp: 3, p: 45, s: '1차' },
         { q: 'Qdrant의 데이터 구조 명칭으로 옳은 것은?', o: ['Namespace - Vector - Metadata', 'Collection - Point - Payload', 'Class - Object - Properties', 'Table - Row - Column'], a: 1, e: 'Qdrant = Collection-Point-Payload. Pinecone = Namespace-Vector-Metadata, Weaviate = Class-Object-Properties.', imp: 3, p: 45, s: '1차' },
         { q: 'IVF 인덱스에서 nprobe 값을 크게 하면?', o: ['속도↑ 정확도↓', '정확도↑ 속도↓', '메모리 사용량이 0이 된다', '클러스터 수가 줄어든다'], a: 1, e: 'nprobe = 탐색할 클러스터 수. 많이 볼수록 정확도는 오르고 속도는 느려진다.', imp: 4, p: 55, s: '2차' },
@@ -350,7 +349,7 @@ splits = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100).spli
         { q: 'Recall을 희생하고 메모리·연산을 극단적으로 줄이는 인덱스로, 모바일·임베디드에 적합한 것은?', o: ['PQ', 'HNSW', 'Flat', 'IVF'], a: 0, e: 'PQ(Product Quantization) = 벡터 압축 저장, 근사 거리 계산 → 메모리 매우 작음, 정확도↓.', imp: 3, p: 45, s: '1차' },
         { q: 'Recall·Latency·Memory 트레이드오프에 대한 설명으로 옳은 것은?', o: ['세 가지를 동시에 최적화할 수 있다', 'Recall↑ Latency↓ Memory↓는 현실적으로 불가능해 요구사항 우선순위로 Index를 선택한다', 'Memory는 검색 품질과 무관하다', 'Latency는 배치 처리에서만 중요하다'], a: 1, e: '3축을 동시에 최적화할 수 없다 — 하나를 얻으면 하나 이상을 포기.', imp: 4, p: 55, s: '2차' },
         { q: 'FAISS에 대한 설명으로 옳은 것은?', o: ['클라우드 SaaS형 Vector DB다', '분산 클러스터를 기본 제공하는 DB다', '고속 검색을 위한 인덱싱 라이브러리로, DB로서의 운영 기능은 포괄하지 않는다', '조건 필터 검색이 핵심 기능이다'], a: 2, e: 'FAISS는 Meta의 **인덱싱 전용 라이브러리(DB 아님)**. 중소규모에서는 로컬 Vector Store처럼 사용.', imp: 4, p: 55, s: '1차' },
-        { q: '복잡한 메타데이터 조건 필터링 + 벡터 검색이 핵심 요구사항일 때 교재가 제시한 후보는?', o: ['Chroma, FAISS', 'Qdrant, Weaviate', 'Annoy, PQ', 'Milvus, Vespa'], a: 1, e: '복잡한 조건 필터 → Qdrant(메타쿼리 조합), Weaviate(GraphQL 조건). 대규모는 Milvus·Vespa.', imp: 3, p: 40, s: '2차' },
+        { q: '복잡한 메타데이터 조건 필터링 + 벡터 검색이 핵심 요구사항일 때 적합한 후보는?', o: ['Chroma, FAISS', 'Qdrant, Weaviate', 'Annoy, PQ', 'Milvus, Vespa'], a: 1, e: '복잡한 조건 필터 → Qdrant(메타쿼리 조합), Weaviate(GraphQL 조건). 대규모는 Milvus·Vespa.', imp: 3, p: 40, s: '2차' },
       ],
     },
     // ───────────────────────────── 4회차
@@ -441,7 +440,7 @@ response = chain.invoke("A에 대해 설명해 주세요.")
 `,
       iv: [
         { q: 'Cosine Similarity와 MMR의 차이는 무엇이고, 각각 언제 쓰나요?', a: 'Cosine Similarity는 질문 벡터와 문서 벡터의 **방향**이 얼마나 같은지만 보고 상위 K개를 고르기 때문에, 비슷한 내용의 문서가 중복으로 뽑힐 수 있습니다. MMR은 질문과의 관련성에서 **이미 선택된 문서와의 유사도**를 빼서 점수를 매기므로, 관련성은 유지하면서 서로 다른 관점의 문서를 고르게 됩니다. λ가 1이면 단순 유사도, 0이면 다양성만 봅니다. 그래서 "환불 기간이 며칠인가?" 같은 **단일 사실 질의는 Cosine**, "재택근무 제도의 장단점" 처럼 **여러 관점을 모아야 하는 질의는 MMR**이 적합합니다.', e: '채점: 중복 문제, 수식의 두 항 의미, λ, 질의 유형별 선택. 꼬리질문: "MMR의 비용 측면 단점은?"', imp: 4, p: 70, s: '1차' },
-        { q: 'Hybrid Retriever는 왜 필요하고, BM25와 Dense 검색 결과를 어떻게 합치나요?', a: 'Dense 검색은 표현이 달라도 의미가 비슷하면 찾아주지만, 제품 코드·고유명사·전문 용어처럼 **정확한 키워드 매칭**에는 약할 수 있습니다. BM25는 반대로 키워드 매칭에 강하고 빠르고 선택 이유를 설명할 수 있지만 "car"와 "vehicle" 같은 **어휘 불일치**를 못 잡습니다. 그래서 둘을 함께 써서 커버리지와 정밀도를 높입니다. 두 방식은 점수 스케일이 다르기 때문에 점수를 그대로 더하지 않고, **RRF(Reciprocal Rank Fusion)**로 각 결과의 **순위의 역수**를 합산해 최종 순위를 만듭니다. 교재 실험에서도 BM25+FAISS 앙상블이 MRR 0.916으로 가장 좋았습니다.', e: '채점: 상호 보완 근거, 점수 스케일 문제와 RRF. 꼬리질문: "한국어 BM25에서 주의할 점?" → 형태소 토크나이저(Kiwi).', imp: 5, p: 85, s: '1차' },
+        { q: 'Hybrid Retriever는 왜 필요하고, BM25와 Dense 검색 결과를 어떻게 합치나요?', a: 'Dense 검색은 표현이 달라도 의미가 비슷하면 찾아주지만, 제품 코드·고유명사·전문 용어처럼 **정확한 키워드 매칭**에는 약할 수 있습니다. BM25는 반대로 키워드 매칭에 강하고 빠르고 선택 이유를 설명할 수 있지만 "car"와 "vehicle" 같은 **어휘 불일치**를 못 잡습니다. 그래서 둘을 함께 써서 커버리지와 정밀도를 높입니다. 두 방식은 점수 스케일이 다르기 때문에 점수를 그대로 더하지 않고, **RRF(Reciprocal Rank Fusion)**로 각 결과의 **순위의 역수**를 합산해 최종 순위를 만듭니다. 비교 실험에서도 BM25+FAISS 앙상블이 MRR 0.916으로 가장 좋았습니다.', e: '채점: 상호 보완 근거, 점수 스케일 문제와 RRF. 꼬리질문: "한국어 BM25에서 주의할 점?" → 형태소 토크나이저(Kiwi).', imp: 5, p: 85, s: '1차' },
         { q: 'Reranker는 무엇이고, Retriever만 쓸 때와 어떤 차이가 있나요?', a: 'Reranker는 Retriever가 빠르게 뽑은 상위 후보를 다시 정밀하게 평가해 순서를 바꾸는 **2단계 검색(Two-Stage Retrieval)**의 두 번째 단계입니다. Retriever는 Bi-Encoder로 질문과 문서를 **따로** 임베딩해 미리 계산된 벡터를 비교하므로 빠르지만 의미 정확도가 떨어질 수 있습니다. Reranker는 Cross-Encoder로 질문과 문서를 **함께** 넣어 관계를 직접 판단하므로 정확하지만 쌍마다 계산해야 해 느립니다. 그래서 전체 문서는 Retriever로 Top-50 정도로 좁히고, 그 안에서만 Reranker로 Top-5를 고르는 식으로 속도와 정확도를 함께 잡습니다. 또 LLM이 긴 컨텍스트 중간 정보를 놓치는 **Lost in the Middle** 문제 때문에, 정말 중요한 문서를 앞에 두는 것이 중요합니다.', e: '채점: Bi vs Cross 구조 차이, 2단계 이유, Lost in the Middle. 꼬리질문: "Reranker 성능은 어떻게 평가?" → MRR, Hit Rate.', imp: 5, p: 85, s: '1차' },
         { q: 'BM25만으로 검색 Baseline을 만들었는데 동의어 질문을 못 찾습니다. 다음 단계로 무엇을 하시겠어요?', a: '이건 **Vocabulary mismatch** 문제입니다. 먼저 Dense Retriever를 추가해 RRF로 결합하는 Hybrid를 가장 먼저 시도하겠습니다. 그래도 키워드 기반의 장점을 유지하고 싶다면 BERT MLM Head로 쿼리와 문서를 관련 용어로 확장하는 **SPLADE** 같은 Learned Sparse를 병행해 검증합니다. 다만 SPLADE는 인덱싱에 GPU 추론이 필요하고 모델 레지스트리·데이터 리니지·카나리 배포 같은 거버넌스가 필요하므로, 전체 트래픽에 바로 적용하지 않고 **일부 트래픽에 카나리로 먼저** 적용해 Hit@K·MRR이 실제로 오르는지 확인한 뒤 확대하겠습니다. 간단하게는 Query Expansion으로 동의어 키워드를 추가하는 방법도 있습니다.', e: '채점: 문제 명명, Hybrid/SPLADE/Query Expansion 대안, 운영 비용과 검증. 꼬리질문: "데이터 리니지가 왜 필요?"', imp: 3, p: 55, s: '2차' },
         { q: 'RAG 프롬프트를 설계할 때 꼭 넣는 요소는 무엇인가요?', a: '세 가지를 분리해서 넣습니다. ① **지시사항**: 역할과 "검색된 문맥만 근거로 답하라", 답을 못 찾으면 **"모른다"고 답하라**는 규칙, 답변 언어·형식, ② **질문**, ③ **문맥(검색 결과)**입니다. 특히 "모르면 모른다고 답하라"는 지시는 정보가 DB에 없을 때의 환각을 줄이는 가장 기본적인 장치입니다. 실무에서는 문맥에 출처(문서명·페이지)를 함께 넣어 답변에 근거를 인용하게 하고, 출력 형식이 중요하면 Output Parser나 Structured Output으로 강제하겠습니다.', e: '채점: 3요소 + 모른다 지시 + 출처 인용. 꼬리질문: "Chain에서 RunnablePassthrough의 역할은?"', imp: 4, p: 65, s: '1차' },
@@ -559,10 +558,10 @@ response = chain.invoke("A에 대해 설명해 주세요.")
         { q: 'K=3, 질문 4개에서 정답 위치가 1위·2위·3위·없음일 때 Hit Rate@3은?', o: ['0.25', '0.5', '0.75', '1.0'], a: 2, e: 'Top-3 안에 정답이 있는 질문 3개 / 전체 4개 = 0.75.', imp: 4, p: 55, s: '1차' },
         { q: '위 예시(1위·2위·3위·없음)의 MRR은 약 얼마인가?', o: ['0.458', '0.611', '0.75', '0.833'], a: 0, e: '(1 + 0.5 + 0.333 + 0) / 4 ≈ 0.458. 정답이 없으면 RR=0.', imp: 4, p: 50, s: '1차' },
         { q: 'Hit Rate@K의 한계로 옳은 것은?', o: ['계산이 복잡하다', '정답이 Top-K 안의 몇 번째인지 구분하지 못한다', '라벨이 필요 없다', '생성 품질만 평가한다'], a: 1, e: 'Hit Rate는 포함 여부만 본다 → 순서는 MRR로 보완.', imp: 3, p: 45, s: '1차' },
-        { q: 'Retrieval 평가 데이터셋을 만드는 교재의 아이디어는?', o: ['사용자에게 모든 질문을 직접 쓰게 한다', '정답 청크를 LLM에게 주고 그 내용으로 답할 수 있는 질문을 생성해 (질문, 청크 ID) 쌍을 만든다', '무작위 문장을 질문으로 쓴다', '임베딩 벡터를 질문으로 쓴다'], a: 1, e: '청크 → LLM 질문 생성 → (질문, 정답청크ID)를 Ground Truth로 활용.', imp: 4, p: 55, s: '2차' },
-        { q: '교재의 Retriever 비교 예시에서 MRR이 가장 높았던 것은?', o: ['FAISS (MMR)', 'Kiwi BM25', 'Ensemble (BM25 + FAISS)', 'MultiQuery Retriever'], a: 2, e: 'Ensemble(키워드+의미)이 MRR 0.916, Hit@1 0.900으로 최고 — 단 데이터마다 다르므로 자체 평가 필요.', imp: 3, p: 45, s: '1차' },
+        { q: 'Retrieval 평가 데이터셋을 만드는 아이디어는?', o: ['사용자에게 모든 질문을 직접 쓰게 한다', '정답 청크를 LLM에게 주고 그 내용으로 답할 수 있는 질문을 생성해 (질문, 청크 ID) 쌍을 만든다', '무작위 문장을 질문으로 쓴다', '임베딩 벡터를 질문으로 쓴다'], a: 1, e: '청크 → LLM 질문 생성 → (질문, 정답청크ID)를 Ground Truth로 활용.', imp: 4, p: 55, s: '2차' },
+        { q: 'Retriever 비교 예시에서 MRR이 가장 높았던 것은?', o: ['FAISS (MMR)', 'Kiwi BM25', 'Ensemble (BM25 + FAISS)', 'MultiQuery Retriever'], a: 2, e: 'Ensemble(키워드+의미)이 MRR 0.916, Hit@1 0.900으로 최고 — 단 데이터마다 다르므로 자체 평가 필요.', imp: 3, p: 45, s: '1차' },
         { q: 'LLM-as-a-Judge 평가 항목 중 "응답이 참고 문서에 기반하는지, 환각 시 감점"에 해당하는 것은?', o: ['유창성 (Fluency)', '충실성 (Faithfulness)', '간결성 (Conciseness)', '명확성 (Clarity)'], a: 1, e: 'Faithfulness = 참고 문서 근거 여부(환각 체크). Correctness는 사실 일치.', imp: 4, p: 60, s: '1차' },
-        { q: 'LLM-as-a-Judge의 편차를 줄이는 방법으로 교재가 제시하지 **않은** 것은?', o: ['평가 항목을 정밀하게 나눈다', '점수와 설명을 포함한 Form-filling 양식', '반복 평가 및 Multi-LLM 교차 평가', '평가 기준을 비워 LLM의 자율 판단에 맡긴다'], a: 3, e: '기준이 모호하면 일관성이 깨지고 관대해진다 → 명확한 기준이 필수.', imp: 3, p: 50, s: '2차' },
+        { q: 'LLM-as-a-Judge의 편차를 줄이는 방법으로 적절하지 **않은** 것은?', o: ['평가 항목을 정밀하게 나눈다', '점수와 설명을 포함한 Form-filling 양식', '반복 평가 및 Multi-LLM 교차 평가', '평가 기준을 비워 LLM의 자율 판단에 맡긴다'], a: 3, e: '기준이 모호하면 일관성이 깨지고 관대해진다 → 명확한 기준이 필수.', imp: 3, p: 50, s: '2차' },
         { q: 'n-gram 재현율 기반으로 요약 평가에 강하고, LCS를 쓰는 변형(-L)이 있는 지표는?', o: ['BLEU', 'ROUGE', 'METEOR', 'SemScore'], a: 1, e: 'ROUGE = Recall 중심(ROUGE-1/2/L). BLEU = 정밀도 + Brevity Penalty(번역).', imp: 3, p: 40, s: '1차' },
         { q: 'BLEU 점수가 0이 되기 쉬운 이유는?', o: ['의미 유사도를 반영하기 때문', 'n-gram 정밀도의 기하평균이라 한 차수라도 일치가 0이면 전체가 0이 되기 때문', '재현율만 보기 때문', '임베딩을 사용하기 때문'], a: 1, e: '1~4-gram 정밀도의 기하평균 → 3·4-gram 일치가 없으면 0. 의미 유사성은 반영하지 않음.', imp: 2, p: 35, s: '2차' },
         { q: '문장 임베딩의 코사인 유사도로 의미적 유사도를 측정하며 Human 평가와 상관이 높은 지표는?', o: ['METEOR', 'SemScore', 'ROUGE-L', 'BLEU'], a: 1, e: 'SemScore = STS 기반, 사전훈련 언어모델 임베딩 코사인 유사도.', imp: 2, p: 35, s: '2차' },
@@ -793,7 +792,7 @@ workflow.add_conditional_edges("relevance_check", is_relevant,
         { q: 'Multi-Agent Agentic RAG에서 질의를 분석해 적합한 Retrieval Agent에 작업을 분배하는 역할은?', o: ['Response Synthesis Agent', 'Retrieval Router Agent', 'Relevance Assessor Agent', 'Query Refinement Agent'], a: 1, e: 'Router Agent = 중간 조정자. Specialized Agent: 문서 / 웹 / 이메일·채팅 로그.', imp: 3, p: 45, s: '2차' },
         { q: 'Agentic Corrective RAG에서 검색 문서가 부족할 때 웹검색 등 대체 소스에 접근하는 역할은?', o: ['Context Retrieval Agent', 'External Knowledge Retrieval Agent', 'Master Agent', 'Retrieval Router Agent'], a: 1, e: 'Relevance Assessor가 관련성 부족 판단 → Query Refinement 또는 External Knowledge Retrieval(Tool).', imp: 3, p: 40, s: '2차' },
         { q: 'Supervisor 구조의 단점으로 옳은 것은?', o: ['하위 에이전트 추가가 어렵다', 'Supervisor 오판 시 전체 시스템에 영향을 주고 병목이 생길 수 있다', '제어와 모니터링이 불가능하다', '작업 분해를 할 수 없다'], a: 1, e: '단일 실패 영향도, 병목, 통신 오버헤드, 하위 자율성 부족.', imp: 4, p: 55, s: '2차' },
-        { q: 'Agentic RAG의 한계로 교재가 지적하지 **않은** 것은?', o: ['종료 조건이 없으면 무한 루프', '에이전트 간 정교한 협업은 제한적', '응답 경로 추적이 어려움', '단일 단계 정적 검색만 가능'], a: 3, e: '정적·단일 단계 검색은 Naïve RAG의 특징. Agentic은 반복적·능동적 검색.', imp: 3, p: 45, s: '1차' },
+        { q: 'Agentic RAG의 한계로 해당하지 **않는** 것은?', o: ['종료 조건이 없으면 무한 루프', '에이전트 간 정교한 협업은 제한적', '응답 경로 추적이 어려움', '단일 단계 정적 검색만 가능'], a: 3, e: '정적·단일 단계 검색은 Naïve RAG의 특징. Agentic은 반복적·능동적 검색.', imp: 3, p: 45, s: '1차' },
         { q: 'LangGraph Node의 반환값으로 옳은 것은?', o: ['State 전체 객체', '변경된 키만 담은 dict (부분 업데이트)', '다음 노드 이름', '항상 None'], a: 1, e: 'Node는 State를 입력받아 변경된 키만 담은 dict를 반환 → LangGraph가 State에 병합.', imp: 4, p: 55, s: '1차' },
         { q: 'LangGraph State에서 Reducer가 없는 필드의 업데이트 방식은?', o: ['누적', 'Overwrite (덮어쓰기)', '무시', '에러 발생'], a: 1, e: 'Reducer 미적용 = Overwrite(last-write-wins), 적용 = 병합·누적(add_messages, operator.add).', imp: 4, p: 55, s: '1차' },
       ],

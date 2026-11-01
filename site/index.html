@@ -3,12 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SK AX 면접 대비 · AI/Data Engineer</title>
-  <meta name="description" content="SKALA 교재 기반 SK AX AI/Data 엔지니어 1·2차 면접 기술 질문 학습 사이트" />
+  <title>AI Engineer 기술면접 대비</title>
+  <meta name="description" content="AI·Data 엔지니어 신입 기술면접 대비 — Python·ML·DL·LLM·RAG·Agent·MLOps 개념 학습, 면접 Q&amp;A, 퀴즈, 오답노트, AI 모의면접" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <link rel="stylesheet" href="css/style.css" />
   <script>
+    // 예전 저장 키(skax-*)를 새 키(aie-*)로 옮김 — 기존 학습 기록 유지
+    try { for (const k of Object.keys(localStorage)) if (k.startsWith('skax-')) { const n = 'aie-' + k.slice(5); if (localStorage.getItem(n) === null) localStorage.setItem(n, localStorage.getItem(k)); localStorage.removeItem(k); } } catch (e) {}
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
   </script>
 </head>
@@ -16,7 +18,7 @@
   <header class="topbar" id="topbar" hidden>
     <a class="brand" href="#/">
       <span class="brand-logo">🎯</span>
-      <span class="brand-text"><b>SK AX 면접 대비</b><small>AI/Data Engineer · SKALA 교재 기반</small></span>
+      <span class="brand-text"><b>AI Engineer 기술면접 대비</b><small>개념 학습 · 면접 Q&amp;A · 퀴즈 · AI 모의면접</small></span>
     </a>
     <nav class="nav" id="nav">
       <a href="#/" data-nav="home">대시보드</a>

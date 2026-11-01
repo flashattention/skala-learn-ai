@@ -4,7 +4,7 @@
 import { firebaseConfig, isFirebaseConfigured } from './firebase-config.js';
 
 const FB_VER = '10.12.2';
-const GUEST_KEY = 'skax-progress-guest';
+const GUEST_KEY = 'aie-progress-guest';
 const MAX_SESSIONS = 800;
 const MAX_AI = 40; // 보관할 AI 면접 기록 수
 const AI_DETAIL_KEEP = 12; // 이 개수보다 오래된 기록은 답변·모범답안 본문을 지워 용량을 줄인다 (Firestore 문서 1MB 제한)
@@ -93,7 +93,7 @@ class FirestoreBackend {
       updatedAt: serverTimestamp(),
     }, { merge: true });
     // 오프라인 대비 로컬 백업
-    try { localStorage.setItem('skax-progress-cache-' + this.uid, JSON.stringify(data)); } catch (e) {}
+    try { localStorage.setItem('aie-progress-cache-' + this.uid, JSON.stringify(data)); } catch (e) {}
   }
 }
 
@@ -205,7 +205,7 @@ export class Auth {
 
   async init() {
     if (!this.configured) {
-      if (localStorage.getItem('skax-guest') === '1') await this.useGuest(false);
+      if (localStorage.getItem('aie-guest') === '1') await this.useGuest(false);
       this.ready = true;
       this.emit();
       return;
@@ -228,18 +228,18 @@ export class Auth {
         if (u) {
           const profile = { name: u.displayName || '', email: u.email || '', photo: u.photoURL || '' };
           this.user = { uid: u.uid, ...profile, guest: false };
-          localStorage.removeItem('skax-guest');
+          localStorage.removeItem('aie-guest');
           const be = new FirestoreBackend({ db, doc: fsMod.doc, getDoc: fsMod.getDoc, setDoc: fsMod.setDoc, serverTimestamp: fsMod.serverTimestamp }, u.uid, profile);
           try {
             await this.progress.use(be);
           } catch (e) {
             console.error('Firestore 로드 실패 — 로컬 캐시 사용', e);
-            const cache = localStorage.getItem('skax-progress-cache-' + u.uid);
+            const cache = localStorage.getItem('aie-progress-cache-' + u.uid);
             this.progress.backend = be;
             this.progress.data = normalize(cache ? JSON.parse(cache) : null);
           }
           await this.offerGuestMerge();
-        } else if (localStorage.getItem('skax-guest') === '1') {
+        } else if (localStorage.getItem('aie-guest') === '1') {
           await this.useGuest(false);
         } else {
           this.user = null;
@@ -279,7 +279,7 @@ export class Auth {
   }
 
   async useGuest(emit = true) {
-    localStorage.setItem('skax-guest', '1');
+    localStorage.setItem('aie-guest', '1');
     this.user = { uid: 'guest', name: '게스트', email: '', photo: '', guest: true };
     await this.progress.use(new LocalBackend(GUEST_KEY));
     if (emit) { this.ready = true; this.emit(); }
@@ -293,7 +293,7 @@ export class Auth {
 
   async signOut() {
     await this.progress.flush();
-    localStorage.removeItem('skax-guest');
+    localStorage.removeItem('aie-guest');
     if (this.fb && this.user && !this.user.guest) await this.fb.authMod.signOut(this.fb.auth);
     this.user = null;
     this.progress.data = emptyProgress();

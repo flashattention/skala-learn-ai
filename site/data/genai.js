@@ -5,7 +5,6 @@ registerField({
   short: '생성형AI',
   icon: '✨',
   color: '#db2777',
-  source: '교재: 생성형AI 5. 생성형 AI 서비스 개발 (이미애)',
   desc: 'AI Application 개발 패러다임과 LLM 이해, LangChain 컴포넌트(Chat Model·Message·Prompt·Structured Output), LCEL·Tool Calling, Basic/Advanced Agent(Middleware·Guardrails·Memory). [보충] 토큰화·디코딩·프롬프팅·LoRA·양자화·LLM 평가.',
   units: [
     // ───────────────────────────── 1회차
@@ -62,7 +61,7 @@ registerField({
 | LangGraph | 순차적 일방통행 → 중앙 집중 State 제어, 동적 인터럽트 | 자율형 에이전트 |
 :::
 
-### 4. 대표 모델 (교재 시점)
+### 4. 대표 모델 (2024년 기준)
 | 벤더 | 모델 | 방식 | 특징 |
 |---|---|---|---|
 | OpenAI | GPT-4o, o1 | Closed API | 업계 표준, o1 추론 특화, 강력한 Tool Calling |
@@ -73,7 +72,7 @@ registerField({
 | Microsoft | Phi-3/4 | 오픈소스 | 소형 언어모델(SLM), 고품질 교과서식 데이터 |
 
 :::tip 2026년 기준 업데이트 — 모델 이름보다 "흐름"을 기억하자
-- 교재 표는 2024년 시점이다. 이후 각 벤더는 **추론(Reasoning) 모델을 주력 모델에 통합**하는 방향으로 갔다 — OpenAI GPT-5 계열(o 시리즈 통합), Anthropic Claude 4~5 계열, Google Gemini 2.5~3 계열.
+- 위 표는 2024년 기준이다. 이후 각 벤더는 **추론(Reasoning) 모델을 주력 모델에 통합**하는 방향으로 갔다 — OpenAI GPT-5 계열(o 시리즈 통합), Anthropic Claude 4~5 계열, Google Gemini 2.5~3 계열.
 - 오픈 웨이트 진영은 **MoE가 표준**이 되었다 — Meta Llama 4, DeepSeek-V3/R1, Qwen3, Mistral 등.
 - 공통 트렌드: 100만 토큰급 컨텍스트, 네이티브 멀티모달, 에이전트·도구 사용 성능 경쟁, 소형 모델(SLM)의 고성능화.
 - 면접에서는 특정 버전 암기보다 "**용도·비용·지연·보안(온프레미스 가능 여부)으로 모델을 고르고, 평가셋으로 검증한다**"는 선택 기준을 말하는 것이 안전하다. 버전은 빠르게 바뀐다.
@@ -339,7 +338,7 @@ add_numbers.invoke({"a": 3, "b": 4})   # 7
         { q: 'RunnablePassthrough.assign(mult=lambda x: x["num"]*3)에 {"num": 1}을 넣으면?', o: ['{"mult": 3}', '{"num": 1, "mult": 3}', '3', '{"num": 3}'], a: 1, e: 'assign은 원본 입력을 유지하면서 새 키를 추가.', imp: 3, p: 40, s: '1차' },
         { q: '입력 조건에 따라 다른 체인을 실행하는 If-Else 라우팅용 Runnable은?', o: ['RunnableBranch', 'RunnableLambda', 'RunnableMap', 'RunnableSequence'], a: 0, e: 'RunnableBranch((조건, 체인), …, 기본체인).', imp: 4, p: 55, s: '1차' },
         { q: '사용자 정의 파이썬 함수를 체인에 끼워 넣기 위해 래핑하는 것은?', o: ['RunnableLambda', 'RunnablePassthrough', 'ToolMessage', 'PromptTemplate'], a: 0, e: '전처리·계산·외부 API 함수를 RunnableLambda로 래핑.', imp: 3, p: 45, s: '1차' },
-        { q: 'Tool Calling이 보완하는 LLM의 한계로 교재가 든 것이 **아닌** 것은?', o: ['실시간 데이터 접근 및 처리', '수학적 계산', '환각 효과', '모델 파라미터 수 부족'], a: 3, e: '실시간 데이터, 수학 계산, 환각. 파라미터 수는 무관.', imp: 3, p: 45, s: '1차' },
+        { q: 'Tool Calling이 보완하는 LLM의 한계로 해당하지 **않는** 것은?', o: ['실시간 데이터 접근 및 처리', '수학적 계산', '환각 효과', '모델 파라미터 수 부족'], a: 3, e: '실시간 데이터, 수학 계산, 환각. 파라미터 수는 무관.', imp: 3, p: 45, s: '1차' },
         { q: 'Tool 사용 장점 중 "LLM이 JSON 형태로 인자를 생성"하는 것은?', o: ['확장성', '지능적 선택', '자동 인자 매핑', '안전성 제어'], a: 2, e: '자동 인자 매핑. 지능적 선택은 "언제 어떤 도구를 쓸지 스스로 판단".', imp: 3, p: 45, s: '1차' },
         { q: '@tool로 커스텀 도구를 만들 때 도구 선택 품질에 가장 큰 영향을 주는 요소는?', o: ['함수 본문의 길이', '타입 힌트와 Docstring(도구 설명)', '파일 이름', '들여쓰기 방식'], a: 1, e: 'LLM은 이름·설명·인자 스키마만 보고 판단한다.', imp: 5, p: 65, s: '1차' },
       ],
@@ -434,7 +433,7 @@ Agent의 최종 결과를 자연어가 아닌 특정 포맷의 구조화 데이�
       quiz: [
         { q: 'Agent Flow에서 모델이 도구 실행을 요청할 때 반환하는 것은?', o: ['ToolMessage', 'AIMessage의 tool_calls', 'SystemMessage', 'HumanMessage'], a: 1, e: '③ Action: AIMessage(tool_calls) → ④ 도구 실행 → ⑤ ToolMessage.', imp: 4, p: 60, s: '1차' },
         { q: 'Agent Flow에서 "도구가 찾아낸 원시 데이터를 모델에게 전달"하는 단계는?', o: ['Request', 'Action', 'Observation', 'Result'], a: 2, e: '⑤ Observation (ToolMessage).', imp: 3, p: 45, s: '1차' },
-        { q: '"30 + 5 * 2"를 물었는데 에이전트가 도구를 호출하지 않고 답했다. 반드시 도구를 쓰게 하는 교재의 방법은?', o: ['temperature를 2.0으로', 'system_prompt에 "사칙연산할 때 무조건 도구를 호출하세요" 명시', '도구를 삭제', 'batch 호출'], a: 1, e: '도구 사용 여부는 모델 판단 → 규칙을 시스템 프롬프트로 명시.', imp: 3, p: 45, s: '1차' },
+        { q: '"30 + 5 * 2"를 물었는데 에이전트가 도구를 호출하지 않고 답했다. 반드시 도구를 쓰게 하는 방법은?', o: ['temperature를 2.0으로', 'system_prompt에 "사칙연산할 때 무조건 도구를 호출하세요" 명시', '도구를 삭제', 'batch 호출'], a: 1, e: '도구 사용 여부는 모델 판단 → 규칙을 시스템 프롬프트로 명시.', imp: 3, p: 45, s: '1차' },
         { q: '"42 + 3 * 23"을 도구로 계산할 때 올바른 호출 순서는?', o: ['add(42,3) → multiply(45,23)', 'multiply(3,23) → add(42,69)', 'add(42,23) → multiply(65,3)', 'divide → subtract'], a: 1, e: '연산 우선순위를 지켜 곱셈(69) 먼저, 그다음 덧셈(111).', imp: 2, p: 30, s: '1차' },
         { q: '단기 메모리에서 "어떤 사용자의 어떤 대화인지" 식별하는 키는?', o: ['user_agent', 'thread_id', 'api_key', 'session_cookie'], a: 1, e: 'checkpointer = 보관소, thread_id = 기억의 열쇠.', imp: 5, p: 65, s: '1차' },
         { q: '같은 checkpointer를 쓰지만 thread_2로 "제 이름이 뭐죠?"를 물으면?', o: ['thread_1에서 말한 이름을 답한다', '새로운 대화로 인식해 이름을 모른다', '오류가 난다', '두 스레드가 합쳐진다'], a: 1, e: '다른 thread_id = 완전히 새로운 대화.', imp: 4, p: 55, s: '1차' },
@@ -590,8 +589,8 @@ def dynamic_model_selector(request, handler):
         'Full Fine-tuning vs PEFT(LoRA·QLoRA), 양자화, LLM 평가·할루시네이션 대응을 설명할 수 있다',
       ],
       content: `
-:::deep 이 회차는 교재 외 보충입니다
-교재는 RAG·가드레일·에이전트 중심이지만, 생성형 AI 직무 면접에서는 "LLM이 어떻게 텍스트를 생성하는가", "파인튜닝과 RAG 중 무엇을 고를 것인가", "LoRA가 뭔가"를 거의 반드시 묻는다.
+:::deep 이 회차는 심화 보충입니다
+앞 회차들은 RAG·가드레일·에이전트 중심이지만, 생성형 AI 직무 면접에서는 "LLM이 어떻게 텍스트를 생성하는가", "파인튜닝과 RAG 중 무엇을 고를 것인가", "LoRA가 뭔가"를 거의 반드시 묻는다.
 :::
 
 ### 1. 토큰화와 컨텍스트 윈도우

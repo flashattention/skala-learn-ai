@@ -1,8 +1,8 @@
-# SK AX AI/Data Engineer 면접 대비 학습 사이트
+# AI Engineer 기술면접 대비 학습 사이트
 
-SKALA 교재 12권을 바탕으로 만든 면접 대비 학습 사이트입니다.
+AI·Data 엔지니어 신입 기술면접을 준비하기 위한 학습 사이트입니다. Python·ML·DL·VectorDB·LLM·RAG·Agent·MLOps 핵심 개념을 회차별로 정리하고, 면접 Q&A·퀴즈·오답노트·AI 모의면접으로 연습합니다.
 9개 분야 · 60개 회차 · 934문항(객관식 651 + 면접 서술형 283).
-제목에 `[보충]`이 붙은 회차는 교재에 없거나 짧게 다룬 면접 단골 주제(OOP, SQL·데이터 엔지니어링, K-means·PCA, LoRA·디코딩, 배포 전략·Kubernetes)를 보강한 것입니다.
+제목에 `[보충]`이 붙은 회차는 기본 회차에서 짧게 다뤘거나 빠진 면접 단골 주제(OOP, SQL·데이터 엔지니어링, K-means·PCA, LoRA·디코딩, 배포 전략·Kubernetes)를 보강한 것입니다.
 
 ## 폴더 구조
 ```
@@ -15,7 +15,7 @@ study_ai/
 ├── functions/         # AI 면접 서버 (Firebase Cloud Function, OpenAI 호출)
 ├── scripts/           # 검증(validate.mjs) · 로컬 개발 서버(dev-server.mjs) · 배포 전 콘텐츠 복사(sync-content.mjs)
 ├── site/              # 실제로 웹에 올라가는 사이트 (이 폴더만 공개됨)
-└── source/            # 교재 PDF (Git에 올리지 않음)
+└── source/            # 원본 학습 자료 (Git에 올리지 않음)
 ```
 
 ## 바로 실행하기 (게스트 모드)
@@ -57,7 +57,7 @@ Cloud Functions는 Firebase **Blaze(종량제) 요금제**가 필요합니다 (�
    > `deploy-functions` 잡은 실패해도 사이트 배포를 막지 않습니다. Blaze 전환 전에는 이 잡만 빨간색으로 표시됩니다.
 
 - 호출은 **Google 로그인 사용자만** 가능하고, 사용자당 하루 150회(질문 생성·채점·총평 각 1회) 제한이 있습니다. 한도는 환경변수 `AI_DAILY_LIMIT`(0이면 무제한)로 조정합니다. 사용량은 Firestore `aiUsage` 컬렉션에 쌓이며 보안 규칙상 클라이언트는 접근할 수 없습니다.
-- 배포 전 `scripts/sync-content.mjs`가 `site/data`를 `functions/content`로 복사해 서버가 교재 본문을 읽게 합니다 (자동 실행, Git에는 올라가지 않음).
+- 배포 전 `scripts/sync-content.mjs`가 `site/data`를 `functions/content`로 복사해 서버가 학습 본문을 읽게 합니다 (자동 실행, Git에는 올라가지 않음).
 - 프롬프트·채점 기준은 `functions/lib/interview.js`에서 고칩니다.
 
 ## 구글 로그인 켜기 (Firebase)
@@ -135,4 +135,4 @@ npx firebase-tools deploy        # 사이트 + firestore.rules 함께 배포
 
 수정 후 `node scripts/validate.mjs`로 스키마(정답 인덱스·중요도·확률)와 마크다운(짝 안 맞는 `**`·`==`·백틱, 표 셀 수)을 확인할 수 있습니다. push하면 CI에서도 같은 검사를 합니다.
 
-※ 출제 가능성·면접 단계는 일반적인 신입 기술면접 경향과 교재 강조도를 바탕으로 한 학습용 추정치이며, SK AX의 공식 기준이 아닙니다.
+※ 출제 가능성·면접 단계는 일반적인 신입 기술면접 경향을 바탕으로 한 학습용 추정치이며, 특정 기업의 공식 기준이 아닙니다.

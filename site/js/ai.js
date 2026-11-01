@@ -8,7 +8,7 @@ import { firebaseConfig } from './firebase-config.js';
 const REGION = 'asia-northeast3'; // functions/index.js 의 region 과 같아야 한다
 const IS_LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
 const ENDPOINT = IS_LOCAL ? '/api/interview' : `https://${REGION}-${firebaseConfig.projectId}.cloudfunctions.net/interview`;
-const PREF_KEY = 'skax-ai-prefs';
+const PREF_KEY = 'aie-ai-prefs';
 const MAX_ANSWER = 4000;
 
 const STAGES = { mix: '실전형 (기본 → 심화)', '1차': '1차 면접 (기본기·개념)', '2차': '2차 면접 (심화·설계·트레이드오프)' };

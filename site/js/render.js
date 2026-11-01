@@ -3,7 +3,7 @@
 //  - 목록 (2칸 들여쓰기로 중첩), 1. 번호 목록
 //  | a | b |  표 (두 번째 줄 |---| 이면 머리글)
 //  ``` 또는 ~~~ 코드 블록
-//  :::key 제목  ...  :::   (key=핵심개념, iv=면접빈출, tip, warn, ex=예시, deep=교재 외 보충)
+//  :::key 제목  ...  :::   (key=핵심개념, iv=면접빈출, tip, warn, ex=예시, deep=심화 보충)
 //  인라인: **굵게**, ==핵심 형광펜==, !!면접 빈출!!, `코드`
 
 const CALLOUT = {
@@ -12,7 +12,7 @@ const CALLOUT = {
   tip: { icon: '💡', label: 'TIP' },
   warn: { icon: '⚠️', label: '주의' },
   ex: { icon: '🧪', label: '예시' },
-  deep: { icon: '📎', label: '보충 (교재 외 심화)' },
+  deep: { icon: '📎', label: '심화 보충' },
 };
 
 export function esc(s) {

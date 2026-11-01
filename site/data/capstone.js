@@ -5,7 +5,6 @@ registerField({
   short: 'Agent Capstone',
   icon: '🏗️',
   color: '#4f46e5',
-  source: '교재: 생성형AI 8. AI Agent Capstone (배기주 / SK AX)',
   desc: 'Backend × Vector DB × AI Agent with MCP × Frontend 통합. MCP Server 설계(Resource·Tool·Prompt 분리), 시스템 경계 4대 결정과 Thread 관리, SSE Streaming(Transport·Content·Lifecycle), Observability·Eval·Error Handling·Cost/Latency·Stateless Session 운영.',
   units: [
     // ───────────────────────────── 1회차
@@ -480,7 +479,7 @@ def build_supervisor_graph(checkpointer):   # 외부 주입
         { q: '웹검색 Tool이 실패해도 RAG Tool로 정보를 수집할 수 있는 경우는 어떤 에러 유형인가?', o: ['Recoverable', 'Non-recoverable', 'Permanent', 'User Error'], a: 0, e: 'Fallback으로 부분 동작 가능 → Recoverable.', imp: 3, p: 45, s: '1차' },
         { q: 'Retry 정책에서 주의할 점으로 옳은 것은?', o: ['Permanent Error도 반복 재시도한다', '`create_jira_ticket` 같은 Action Tool 재시도는 중복을 만들 수 있다', '재시도 횟수 상한은 두지 않는다', '모든 Layer가 각자 3회씩 재시도하는 것이 안전하다'], a: 1, e: 'Action 재시도는 중복 생성 위험, 여러 Layer 재시도는 횟수가 곱해짐(3×3=9).', imp: 5, p: 60, s: '2차' },
         { q: 'Graceful Degradation의 설계 원칙은?', o: ['시스템은 동작/미동작 둘 중 하나여야 한다', '일부가 실패해도 부분 동작·제한된 동작 등 여러 상태에서 최대한의 가치를 전달한다', '에러는 항상 숨긴다', '실패 시 즉시 전체 서비스를 중단한다'], a: 1, e: "Don't: Binary / Do: 동작·부분 동작·제한 동작·동작 불가 상태별 적절한 경험.", imp: 4, p: 50, s: '1차' },
-        { q: 'Agent 통합 시스템에서 Tool 호출 1회가 유발하는 LLM 호출 수로 교재가 설명한 것은?', o: ['0회', '1회', '2회 (Tool 호출 결정 + 결과 처리)', '5회'], a: 2, e: 'Tool call → Tool 응답 → 그 응답을 처리하는 LLM 호출 → 하나의 tool 호출이 LLM 호출 2번.', imp: 3, p: 45, s: '2차' },
+        { q: 'Agent 통합 시스템에서 Tool 호출 1회가 유발하는 LLM 호출 수로 가장 적절한 것은?', o: ['0회', '1회', '2회 (Tool 호출 결정 + 결과 처리)', '5회'], a: 2, e: 'Tool call → Tool 응답 → 그 응답을 처리하는 LLM 호출 → 하나의 tool 호출이 LLM 호출 2번.', imp: 3, p: 45, s: '2차' },
         { q: '병렬 실행이 가능한 조건이 **아닌** 것은?', o: ['서로의 결과를 입력으로 사용하지 않음', '같은 State를 동시에 업데이트하지 않음', '하나가 실패해도 나머지는 계속 진행 가능', '반드시 같은 순서로 실행되어야 결과가 맞음'], a: 3, e: '실행 순서가 결과에 영향을 주지 않아야 병렬 가능.', imp: 4, p: 55, s: '2차' },
         { q: '병렬 실행의 단점으로 옳은 것은?', o: ['Cost가 크게 증가한다', '전체 대기 시간이 가장 느린 Task에 맞춰지고 Rate limit 위험이 커진다', 'Latency가 증가한다', 'State가 항상 손상된다'], a: 1, e: '장점: Latency↓, Cost 거의 동일 / 단점: 최장 Task에 맞춰짐, 동시 호출로 Rate limit.', imp: 3, p: 45, s: '2차' },
         { q: 'LangGraph의 checkpoint_id에 대한 설명으로 옳은 것은?', o: ['Client가 생성해 요청 시 주입한다', 'LangGraph 엔진이 노드 실행마다 자동 발행하는 상태 버전 식별자다', '대화방 번호 역할을 한다', '쿠키에 저장된다'], a: 1, e: 'thread_id=Client가 주입하는 세션 ID, checkpoint_id=엔진이 발행하는 Git 커밋 해시 같은 스냅샷 ID.', imp: 3, p: 45, s: '2차' },

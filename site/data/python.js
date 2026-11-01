@@ -5,7 +5,6 @@ registerField({
   short: 'Python',
   icon: '🐍',
   color: '#2563eb',
-  source: '교재: 2) 데이터분석 및 AIOps 1. 데이터 분석을 위한 Python 이해 (백정열)',
   desc: '실행 구조(AST·바이트코드·PVM·GC)와 venv, 자료구조·컴프리헨션·제너레이터, 함수·데코레이터·예외·로깅, 타입 힌트·Pydantic, pytest·Ruff·pre-commit, GIL·asyncio·multiprocessing, Pandas·Polars·DuckDB, 시각화·통계·sklearn Pipeline. [보충] OOP·복사·이터레이터, SQL·데이터 엔지니어링(ETL/ELT·Spark·Kafka·Airflow).',
   units: [
     // ───────────────────────────── 1회차
@@ -193,7 +192,7 @@ total = sum(float(r[2]) for r in read_rows('large.csv'))
         { q: 'list의 맨 앞에 원소를 삽입(insert(0, x))하는 시간복잡도는?', o: ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'], a: 2, e: '동적 배열이라 뒤 원소를 모두 이동. 양 끝 O(1)이 필요하면 deque.', imp: 5, p: 65, s: '1차' },
         { q: 'dict의 키로 사용할 수 **없는** 것은?', o: ['"name"', '(1, 2)', '42', '[1, 2]'], a: 3, e: '키는 해시 가능(immutable)해야 함. list는 mutable이라 불가, tuple은 가능.', imp: 4, p: 60, s: '1차' },
         { q: 'set의 멤버십 검사(x in s) 평균 시간복잡도는?', o: ['O(1)', 'O(log n)', 'O(n)', 'O(n log n)'], a: 0, e: '해시 테이블 기반. list는 O(n).', imp: 4, p: 60, s: '1차' },
-        { q: 'collections.deque의 내부 구조에 대한 교재 설명으로 옳은 것은?', o: ['단순 동적 배열', '고정 크기 배열 블록들을 양방향으로 연결한 구조(linked list of arrays)', '해시 테이블', '이진 트리'], a: 1, e: '단순 Doubly Linked List가 아니라 블록 기반 → cache-friendly + 양 끝 O(1).', imp: 3, p: 40, s: '1차' },
+        { q: 'collections.deque의 내부 구조에 대한 설명으로 옳은 것은?', o: ['단순 동적 배열', '고정 크기 배열 블록들을 양방향으로 연결한 구조(linked list of arrays)', '해시 테이블', '이진 트리'], a: 1, e: '단순 Doubly Linked List가 아니라 블록 기반 → cache-friendly + 양 끝 O(1).', imp: 3, p: 40, s: '1차' },
         { q: '존재하지 않는 키에 접근할 때 KeyError 대신 기본값을 자동 생성하는 자료구조는?', o: ['OrderedDict', 'defaultdict', 'Counter', 'namedtuple'], a: 1, e: 'defaultdict(list), defaultdict(int) — 그룹핑·카운팅에 유용.', imp: 3, p: 45, s: '1차' },
         { q: 'Counter(["a","b","a","c","b","a"]).most_common(2)의 결과는?', o: ["[('a', 3), ('b', 2)]", "[('b', 2), ('a', 3)]", "{'a': 3, 'b': 2}", "['a', 'b']"], a: 0, e: '가장 많이 등장한 n개를 (요소, 개수) 튜플 리스트로.', imp: 2, p: 30, s: '1차' },
         { q: 'yield를 사용하는 제너레이터의 장점은?', o: ['모든 값을 미리 메모리에 생성한다', '값을 필요할 때 하나씩 생성해 메모리를 크게 절약한다', '여러 번 재사용해도 처음부터 다시 생성된다', '항상 리스트보다 느리다'], a: 1, e: 'Lazy evaluation. 한 번 소진하면 재사용 불가에 주의.', imp: 5, p: 65, s: '1차' },
@@ -333,7 +332,7 @@ fmt = logging.Formatter('%(asctime)s|%(levelname)s|%(message)s')
         { q: '@decorator1 @decorator2 def say_hello(): 의 적용 결과와 같은 것은?', o: ['decorator2(decorator1(say_hello))', 'decorator1(decorator2(say_hello))', 'decorator1(say_hello) + decorator2(say_hello)', '적용 순서는 무작위'], a: 1, e: '가까운(아래) 데코레이터부터 감싼다. 실행 출력은 d1 전 → d2 전 → 함수 → d2 후 → d1 후.', imp: 4, p: 55, s: '1차' },
         { q: 'functools.wraps를 데코레이터에 사용하는 이유는?', o: ['실행 속도를 높이기 위해', '원래 함수의 __name__·__doc__ 같은 메타데이터를 보존하기 위해', '예외를 무시하기 위해', '함수를 비동기로 바꾸기 위해'], a: 1, e: '없으면 say_hello.__name__이 "wrapper"로 바뀐다.', imp: 4, p: 60, s: '1차' },
         { q: '동일한 인자로 호출되면 계산을 생략하고 이전 결과를 반환하게 하는 표준 데코레이터는?', o: ['@staticmethod', '@functools.lru_cache', '@property', '@dataclass'], a: 1, e: 'lru_cache(maxsize=128) — 결과 캐싱.', imp: 3, p: 45, s: '1차' },
-        { q: 'json.dump로 한글 데이터를 저장할 때 깨지지 않게 하는 옵션은?', o: ['indent=4', 'ensure_ascii=False', 'sort_keys=True', 'encoding="ascii"'], a: 1, e: '기본은 \\uXXXX 이스케이프. 교재 실습 감점 항목.', imp: 3, p: 40, s: '1차' },
+        { q: 'json.dump로 한글 데이터를 저장할 때 깨지지 않게 하는 옵션은?', o: ['indent=4', 'ensure_ascii=False', 'sort_keys=True', 'encoding="ascii"'], a: 1, e: '기본은 \\uXXXX 이스케이프. 실습에서 자주 감점되는 항목.', imp: 3, p: 40, s: '1차' },
         { q: 'try-except-else-finally에서 "예외가 발생하지 않았을 때만" 실행되는 블록은?', o: ['try', 'except', 'else', 'finally'], a: 2, e: 'finally는 항상, else는 예외가 없을 때만.', imp: 3, p: 50, s: '1차' },
         { q: '로깅 레벨을 낮은 것부터 올바르게 나열한 것은?', o: ['INFO < DEBUG < WARNING < ERROR < CRITICAL', 'DEBUG < INFO < WARNING < ERROR < CRITICAL', 'DEBUG < WARNING < INFO < ERROR < CRITICAL', 'CRITICAL < ERROR < WARNING < INFO < DEBUG'], a: 1, e: '핸들러 레벨을 INFO로 두면 INFO 이상만 출력.', imp: 4, p: 55, s: '1차' },
         { q: '로그를 매일 자정마다 새 파일로 분리하고 최근 7일만 보관하는 핸들러는?', o: ['StreamHandler', 'TimedRotatingFileHandler(when="midnight", backupCount=7)', 'NullHandler', 'SMTPHandler'], a: 1, e: '날짜별 회전 + 보관 개수 지정.', imp: 3, p: 40, s: '1차' },
@@ -675,7 +674,7 @@ df_seoul['amount'] = df_seoul['amount'] * 1.1      # 경고! 원본? 사본? 모
 df_seoul = df[df['region'] == '서울'].copy()        # 방법 1: 명시적 copy
 df.loc[df['region'] == '서울', 'amount'] *= 1.1     # 방법 2: .loc로 원본 직접 수정
 ~~~
-Copy-on-Write(CoW)에서는 필터 결과를 수정해도 **원본이 바뀌지 않고**, 체인 할당(\`df[mask]['col'] = …\`)은 원본에 반영되지 않는다. ==\`.copy()\`, \`.loc\`, \`assign()\` + \`query()\` 체이닝==이 안전한 패턴. (교재는 "2.0부터 기본 활성화"로 설명하지만, 2.x에선 옵션(\`pd.options.mode.copy_on_write\`)으로 도입되었고 **Pandas 3.0에서 기본 동작**이 되었다)
+Copy-on-Write(CoW)에서는 필터 결과를 수정해도 **원본이 바뀌지 않고**, 체인 할당(\`df[mask]['col'] = …\`)은 원본에 반영되지 않는다. ==\`.copy()\`, \`.loc\`, \`assign()\` + \`query()\` 체이닝==이 안전한 패턴. (흔히 "2.0부터 기본 활성화"로 설명되지만, 2.x에선 옵션(\`pd.options.mode.copy_on_write\`)으로 도입되었고 **Pandas 3.0에서 기본 동작**이 되었다)
 :::
 - ==apply()는 행/열마다 Python 함수를 호출하는 루프 → 느림==, ==벡터화 연산==(NumPy·C 레벨)은 빠름: 100만 행 \`apply(lambda x: x.upper())\` ~3.2초 vs \`.str.upper()\` ~0.08초(**약 40×**)
 - 접근자: \`.str.lower()/.contains()\`, \`.dt.year/.month/.day_name()\`
@@ -730,7 +729,7 @@ duckdb.sql("SELECT s.*, c.tier FROM 'sales.parquet' s JOIN 'customers.csv' c ON 
       iv: [
         { q: '결측치는 어떻게 처리하시나요?', a: '먼저 isna().sum()으로 컬럼별 결측 비율과 패턴을 보고, 결측이 왜 생겼는지(완전 무작위 MCAR, 다른 변수와 관련된 MAR, 값 자체와 관련된 MNAR)를 판단합니다. 결측 비율이 매우 작고 무작위면 해당 행을 dropna(subset=...)로 지우고, 그렇지 않으면 수치형은 평균이나 이상치에 강한 중앙값, 범주형은 최빈값이나 "Unknown" 범주로 채우며, 필요하면 그룹별 대체나 모델 기반 대체를 씁니다. 결측 여부 자체가 정보라면 결측 플래그 변수를 추가합니다. 모델링용이라면 대체 통계는 Train에서만 계산해 Valid/Test에 적용해 데이터 누수를 막습니다.', imp: 5, p: 85, s: '1차' },
         { q: '이상치는 어떻게 탐지하고 처리하나요?', a: '분포를 박스플롯·히스토그램으로 보고, 통계적으로는 IQR 규칙(Q1 − 1.5·IQR 미만 또는 Q3 + 1.5·IQR 초과)이나 정규분포 가정 시 Z-score(|z| > 3)로 후보를 찾습니다. 그다음 입력 오류인지 실제 희귀 사건인지 도메인 관점에서 확인합니다. 오류면 수정하거나 제거하고, 실제 값이면 무작정 지우지 않고 상·하한으로 클리핑(윈저라이징), 로그 변환, 이상치에 강한 모델(트리 계열)이나 지표(MAE)를 선택합니다. 사기 탐지처럼 이상치가 곧 관심 대상인 문제에선 제거하면 안 됩니다.', imp: 4, p: 75, s: '1차' },
-        { q: 'Pandas에서 apply 대신 벡터화 연산을 써야 하는 이유는?', a: 'apply는 행이나 원소마다 파이썬 함수를 호출하는 사실상의 파이썬 루프라, 인터프리터 오버헤드가 데이터 크기만큼 반복되어 느립니다. 벡터화 연산은 열 전체에 대한 연산을 NumPy·C 레벨에서 한 번에 처리하므로, 교재 예처럼 100만 행 문자열 대문자 변환이 apply 약 3.2초 대비 .str.upper() 약 0.08초로 40배가량 빠릅니다. 그래서 산술·비교·np.where·.str·.dt 접근자 같은 벡터화 기능을 먼저 쓰고, 정말 복잡한 행 단위 로직에만 apply를 쓰며, 그래도 느리면 Polars를 고려합니다.', imp: 4, p: 70, s: '1차' },
+        { q: 'Pandas에서 apply 대신 벡터화 연산을 써야 하는 이유는?', a: 'apply는 행이나 원소마다 파이썬 함수를 호출하는 사실상의 파이썬 루프라, 인터프리터 오버헤드가 데이터 크기만큼 반복되어 느립니다. 벡터화 연산은 열 전체에 대한 연산을 NumPy·C 레벨에서 한 번에 처리하므로, 예를 들어 100만 행 문자열 대문자 변환이 apply 약 3.2초 대비 .str.upper() 약 0.08초로 40배가량 빠릅니다. 그래서 산술·비교·np.where·.str·.dt 접근자 같은 벡터화 기능을 먼저 쓰고, 정말 복잡한 행 단위 로직에만 apply를 쓰며, 그래도 느리면 Polars를 고려합니다.', imp: 4, p: 70, s: '1차' },
         { q: 'Polars의 Lazy API는 무엇이 좋은가요?', a: 'Lazy API는 scan_csv처럼 데이터를 바로 읽지 않고, filter·group_by·select 같은 연산을 실행 계획(쿼리 플랜)으로 쌓아두었다가 collect()를 호출할 때 한 번에 최적화해 실행합니다. 이때 필터 조건을 파일 읽기 단계로 내려 필요한 행만 읽는 predicate pushdown과, 필요한 컬럼만 읽는 projection pushdown, 불필요한 연산 제거와 병렬화가 자동으로 적용되어 대용량에서도 빠르고 메모리를 적게 씁니다. 대신 collect()를 빼먹으면 결과 대신 LazyFrame만 남는다는 점에 주의합니다.', imp: 4, p: 60, s: '2차' },
         { q: 'Pandas, Polars, DuckDB는 각각 언제 쓰시겠어요?', a: '수백만 행 이하에서 Jupyter로 빠르게 탐색하고 시각화·sklearn 등 생태계와 연동할 땐 Pandas가 편합니다. 그보다 큰 데이터를 변환·집계하거나 멀티코어와 메모리 효율이 중요하면, Rust·Arrow 기반으로 자동 병렬화되고 Lazy 최적화를 하는 Polars를 씁니다. SQL에 익숙하거나 여러 CSV·Parquet 파일을 로딩 없이 바로 JOIN·집계하고 싶을 땐 서버 없는 OLAP 엔진인 DuckDB가 좋습니다. 세 도구는 Arrow로 제로카피 변환이 되므로, 원본을 Parquet으로 저장하고 DuckDB·Polars로 무거운 집계를 한 뒤 결과를 Pandas로 받아 시각화하는 식으로 조합합니다.', imp: 4, p: 60, s: '2차' },
       ],
@@ -746,7 +745,7 @@ duckdb.sql("SELECT s.*, c.tier FROM 'sales.parquet' s JOIN 'customers.csv' c ON 
         { q: 'Lazy 실행의 predicate pushdown이란?', o: ['필요한 컬럼만 읽기', '필터 조건을 파일 읽기 단계로 내려 필요한 행만 읽기', '결과를 캐싱', 'GPU로 계산'], a: 1, e: 'projection pushdown = 필요한 컬럼만.', imp: 3, p: 40, s: '2차' },
         { q: 'DuckDB의 특징으로 옳은 것은?', o: ['별도 서버를 띄워야 한다', '서버 없이 CSV·Parquet 파일에 바로 SQL을 실행하는 In-process OLAP DB', 'NoSQL 문서 DB', '그래프 DB'], a: 1, e: "FROM 'data/*.csv' 와일드카드, .df()/.pl() 변환.", imp: 4, p: 50, s: '1차' },
         { q: 'Polars·DuckDB·Pandas 간 직렬화 비용 없는 제로카피 변환을 가능하게 하는 공통 포맷은?', o: ['JSON', 'Apache Arrow (컬럼형 인메모리)', 'Pickle', 'XML'], a: 1, e: 'Arrow = 메모리 포맷, Parquet = 디스크 컬럼형 저장 포맷.', imp: 3, p: 45, s: '2차' },
-        { q: 'Parquet이 CSV보다 분석에 유리한 이유는?', o: ['사람이 읽기 쉬워서', '컬럼형 저장으로 필요한 컬럼만 읽고, 압축·타입 보존으로 빠르고 작기 때문', '행 단위 저장이라서', '엑셀에서 바로 열려서'], a: 1, e: 'CSV 대비 약 10× 빠른 읽기, 5× 작은 크기(교재).', imp: 4, p: 55, s: '1차' },
+        { q: 'Parquet이 CSV보다 분석에 유리한 이유는?', o: ['사람이 읽기 쉬워서', '컬럼형 저장으로 필요한 컬럼만 읽고, 압축·타입 보존으로 빠르고 작기 때문', '행 단위 저장이라서', '엑셀에서 바로 열려서'], a: 1, e: 'CSV 대비 약 10× 빠른 읽기, 5× 작은 크기.', imp: 4, p: 55, s: '1차' },
       ],
     },
 
@@ -861,7 +860,7 @@ data-project/
         { q: '상관계수에 대한 설명으로 옳은 것은?', o: ['인과관계를 증명한다', '−1~+1 범위로 선형 관계의 강도·방향을 나타낸다', '비선형 관계를 완벽히 포착한다', '항상 0~1이다'], a: 1, e: '상관 ≠ 인과.', imp: 4, p: 55, s: '1차' },
         { q: 'sklearn에서 수치형·범주형 컬럼에 서로 다른 전처리를 적용하는 도구는?', o: ['Pipeline', 'ColumnTransformer', 'GridSearchCV', 'joblib'], a: 1, e: 'ColumnTransformer([("num", StandardScaler(), …), ("cat", OneHotEncoder(), …)]).', imp: 4, p: 55, s: '1차' },
         { q: 'joblib으로 Pipeline 전체를 저장하는 가장 큰 이점은?', o: ['파일 크기가 0이 된다', '배포 환경에서도 학습 때와 동일한 전처리 + 예측이 보장된다', '학습이 빨라진다', 'GPU를 쓸 수 있다'], a: 1, e: 'Training-Serving Skew 방지 → MLOps의 기본.', imp: 4, p: 60, s: '2차' },
-        { q: 'CRISP-DM의 핵심 메시지로 교재가 강조한 것은?', o: ['최신 알고리즘이 가장 중요', '기술 중심이 아닌 문제 해결 중심 — 좋은 분석은 올바른 문제 정의에서 시작', '배포는 선택 사항', '평가 단계는 생략 가능'], a: 1, e: '업무 이해 → 데이터 이해 → 준비 → 모델링 → 평가 → 배포.', imp: 3, p: 45, s: '1차' },
+        { q: 'CRISP-DM의 핵심 메시지로 가장 적절한 것은?', o: ['최신 알고리즘이 가장 중요', '기술 중심이 아닌 문제 해결 중심 — 좋은 분석은 올바른 문제 정의에서 시작', '배포는 선택 사항', '평가 단계는 생략 가능'], a: 1, e: '업무 이해 → 데이터 이해 → 준비 → 모델링 → 평가 → 배포.', imp: 3, p: 45, s: '1차' },
         { q: '좋은 분석 파이프라인의 원칙이 **아닌** 것은?', o: ['각 단계(E-V-T-L) 분리', '오류 기록', '재현 가능·각 단계 테스트 가능', '모든 단계를 하나의 거대한 함수로 작성'], a: 3, e: '단계 분리 → 실패 시 어느 단계인지 즉시 파악.', imp: 3, p: 40, s: '1차' },
       ],
     },
@@ -875,8 +874,8 @@ data-project/
         'Iterable vs Iterator, 얕은 복사 vs 깊은 복사, 가변 기본값 함정, if __name__ == "__main__"을 설명할 수 있다',
       ],
       content: `
-:::deep 이 회차는 교재 외 보충입니다
-교재는 "클래스 = 붕어빵 틀, 인스턴스 = 붕어빵"으로 짧게 요약했지만, Python 기술 면접에서는 OOP와 복사·이터레이터 개념을 자주 묻는다. 교재 2·3회차 내용과 연결해 정리한다.
+:::deep 이 회차는 심화 보충입니다
+앞 회차에서는 "클래스 = 붕어빵 틀, 인스턴스 = 붕어빵" 정도로 짧게 다뤘지만, Python 기술 면접에서는 OOP와 복사·이터레이터 개념을 자주 묻는다. 2·3회차 내용과 연결해 정리한다.
 :::
 
 ### 1. 클래스와 인스턴스
@@ -886,7 +885,7 @@ data-project/
 
 ~~~python
 class Account:
-    bank = "SK Bank"                      # 클래스 변수: 모든 인스턴스가 공유
+    bank = "AI Bank"                      # 클래스 변수: 모든 인스턴스가 공유
     def __init__(self, owner, balance=0):
         self.owner = owner                # 인스턴스 변수: 객체마다 따로
         self._balance = balance           # _ 접두사 = "내부용" 관례 (강제 아님)
@@ -984,7 +983,7 @@ d = copy.deepcopy(a); d[0].append(7)  # a는 그대로
         { q: 'if __name__ == "__main__":은 왜 쓰나요?', a: 'Python 파일은 직접 실행되면 __name__이 "__main__"이 되고, 다른 파일에서 import되면 모듈 이름이 됩니다. 그래서 이 조건 아래에 둔 코드는 파일을 직접 실행할 때만 동작하고, 모듈로 import될 때는 실행되지 않습니다. 덕분에 같은 파일을 재사용 가능한 모듈이자 실행 스크립트로 쓸 수 있고 테스트·데모 코드를 분리할 수 있습니다. 또 multiprocessing에서는 자식 프로세스가 모듈을 다시 import할 때 프로세스 생성 코드가 재귀적으로 실행되는 것을 막기 위해 필수입니다.', imp: 3, p: 55, s: '1차' },
       ],
       quiz: [
-        { q: '클래스와 인스턴스에 대한 설명으로 옳은 것은?', o: ['인스턴스는 설계도, 클래스는 실체', '클래스는 설계도(붕어빵 틀), 인스턴스는 그 클래스로 만든 실제 객체', '둘은 같은 것이다', '인스턴스는 메서드를 가질 수 없다'], a: 1, e: '교재 요약: 클래스 = 붕어빵 틀, 인스턴스 = 붕어빵.', imp: 3, p: 45, s: '1차' },
+        { q: '클래스와 인스턴스에 대한 설명으로 옳은 것은?', o: ['인스턴스는 설계도, 클래스는 실체', '클래스는 설계도(붕어빵 틀), 인스턴스는 그 클래스로 만든 실제 객체', '둘은 같은 것이다', '인스턴스는 메서드를 가질 수 없다'], a: 1, e: '요약: 클래스 = 붕어빵 틀, 인스턴스 = 붕어빵.', imp: 3, p: 45, s: '1차' },
         { q: '클래스 변수 members = []를 두고 t1.members.append("A")를 하면?', o: ['t1에만 추가된다', '모든 인스턴스가 공유하는 같은 리스트에 추가된다', '오류가 발생한다', '새 리스트가 생성된다'], a: 1, e: '가변 객체를 클래스 변수로 두면 공유된다 → __init__에서 self.members = [].', imp: 4, p: 55, s: '1차' },
         { q: '자식 클래스에서 부모 클래스의 __init__을 호출하는 방법은?', o: ['parent()', 'super().__init__(...)', 'self.__init__()', 'base.init()'], a: 1, e: 'super()로 부모 메서드를 재사용.', imp: 3, p: 45, s: '1차' },
         { q: '대체 생성자(Account.from_dict(d))를 만들 때 적합한 데코레이터는?', o: ['@staticmethod', '@classmethod', '@property', '@dataclass'], a: 1, e: 'cls를 받아 클래스 자체로 인스턴스를 생성.', imp: 3, p: 40, s: '1차' },
@@ -1007,8 +1006,8 @@ d = copy.deepcopy(a); d[0].append(7)  # a는 그대로
         '배치 vs 스트리밍, Spark·Kafka·Airflow의 역할과 데이터 품질·멱등성 개념을 설명할 수 있다',
       ],
       content: `
-:::deep 이 회차는 교재 외 보충입니다
-교재는 Pandas·Polars·DuckDB(7회차)까지 다루지만, **Data 엔지니어** 직무 면접에서는 SQL과 데이터 파이프라인 기본기를 거의 반드시 확인한다. 코딩 테스트에 SQL이 나오는 경우도 많다.
+:::deep 이 회차는 심화 보충입니다
+앞 회차는 Pandas·Polars·DuckDB(7회차)까지 다루지만, **Data 엔지니어** 직무 면접에서는 SQL과 데이터 파이프라인 기본기를 거의 반드시 확인한다. 코딩 테스트에 SQL이 나오는 경우도 많다.
 :::
 
 ### 1. SQL 실행 순서와 집계
@@ -1084,7 +1083,7 @@ FROM orders;
 | ==Apache Kafka== | **분산 이벤트 스트리밍 플랫폼(메시지 큐)** — Producer → Topic(Partition) → Consumer Group, 디스크에 보관해 재처리 가능 |
 | ==Apache Airflow== | **워크플로 오케스트레이션** — 작업 의존성을 ==DAG==로 정의, 스케줄·재시도·모니터링 |
 | dbt | DW 안의 SQL 변환을 코드·테스트로 관리 (ELT의 T) |
-:::key 좋은 파이프라인의 조건 (교재 8회차 E-V-T-L과 연결)
+:::key 좋은 파이프라인의 조건 (8회차 E-V-T-L과 연결)
 - ==멱등성(Idempotency)==: 같은 작업을 여러 번 재실행해도 결과가 같아야 함 → 실패 후 재시도 안전 (덮어쓰기/파티션 단위 교체, upsert)
 - ==데이터 품질 검사==: 스키마·NULL 비율·범위·중복·건수 검증(Great Expectations, Pandera, Pydantic) → 실패 시 중단·알림
 - 증분 처리(새로 들어온 것만), 파티셔닝(날짜별), 백필(backfill), 데이터 계보(lineage)와 모니터링

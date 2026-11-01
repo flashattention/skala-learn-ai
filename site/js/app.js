@@ -126,8 +126,8 @@ function viewLogin() {
   <section class="login">
     <div class="login-card">
       <div class="login-logo">🎯</div>
-      <h1>SK AX AI/Data Engineer<br>면접 대비 학습</h1>
-      <p class="muted">SKALA 교재 ${FIELDS.length}개 분야 · ${ALLUNITS.length}개 회차 · ${totalQ}개 문항<br>핵심 개념 학습 → 면접 Q&A → 퀴즈 → 오답노트까지 한 번에</p>
+      <h1>AI Engineer<br>기술면접 대비</h1>
+      <p class="muted">${FIELDS.length}개 분야 · ${ALLUNITS.length}개 회차 · ${totalQ}개 문항<br>핵심 개념 학습 → 면접 Q&A → 퀴즈 → 오답노트까지 한 번에</p>
       <div class="login-actions">
         <button class="btn-google" id="googleBtn" ${auth.configured ? '' : 'disabled'}>
           <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
@@ -168,7 +168,7 @@ function viewHome() {
   <section class="hero">
     <div>
       <h1>안녕하세요, ${esc(auth.user.name || '학습자')}님 👋</h1>
-      <p class="muted">교재 ${FIELDS.length}개 분야를 회차별로 학습하고, 면접 빈출 문항으로 실전 감각을 만드세요.</p>
+      <p class="muted">${FIELDS.length}개 분야를 회차별로 학습하고, 면접 빈출 문항으로 실전 감각을 만드세요.</p>
     </div>
     <div class="hero-actions">
       ${next ? `<a class="btn" href="#/unit/${next.id}/learn">📘 이어서 학습: ${esc(unitLabel(next, false))}</a>` : '<span class="chip">🎉 모든 회차 학습 완료!</span>'}
@@ -205,7 +205,7 @@ function viewHome() {
 function fieldCard(f) {
   const s = fieldStats(f);
   return `<a class="field-card" href="#/field/${f.id}" style="--c:${f.color}">
-    <div class="fc-head"><span class="fc-icon">${f.icon}</span><div><b>${esc(f.title)}</b><small>${esc(f.source)}</small></div></div>
+    <div class="fc-head"><span class="fc-icon">${f.icon}</span><div><b>${esc(f.title)}</b></div></div>
     <p class="fc-desc">${esc(f.desc)}</p>
     <div class="fc-meta"><span>${f.units.length}회차</span><span>${f.units.reduce((n, u) => n + unitQuestions(u).length, 0)}문항</span><span>정답률 ${pct(s.c, s.c + s.w)}%</span></div>
     <div class="bar"><i style="width:${pct(s.learned, s.units)}%"></i></div>
@@ -224,7 +224,7 @@ function legend() {
       <div><span class="b b-stage">1차 면접</span> 1차: 직무·기술 개념 / 2차: 설계·트레이드오프·실무 적용 심화</div>
       <div><span class="b b-type">🗣 면접 서술형</span> 직접 말로 답해보고 스스로 채점</div>
     </div>
-    <p class="small muted">※ 출제 가능성·단계는 일반적인 AI/Data 엔지니어 신입 기술면접 경향과 교재 강조도를 바탕으로 한 학습용 추정치이며, 실제 SK AX 공식 출제 기준이 아닙니다.</p>
+    <p class="small muted">※ 출제 가능성·단계는 일반적인 AI/Data 엔지니어 신입 기술면접 경향을 바탕으로 한 학습용 추정치이며, 특정 기업의 공식 출제 기준이 아닙니다.</p>
   </section>`;
 }
 
@@ -245,7 +245,6 @@ function viewField(id) {
     <span class="fc-icon big">${f.icon}</span>
     <div>
       <h1>${esc(f.title)}</h1>
-      <p class="muted">${esc(f.source)}</p>
       <p>${esc(f.desc)}</p>
       <div class="fc-meta"><span>학습 완료 ${s.learned}/${s.units}</span><span>풀어본 문항 ${s.answered}/${s.total}</span><span>누적 맞춘 ${s.c} · 틀린 ${s.w} (정답률 ${pct(s.c, s.c + s.w)}%)</span></div>
     </div>
@@ -372,7 +371,7 @@ function renderQuizSetup(u, body, params = new URLSearchParams(location.hash.spl
           <option value="wrong">이전에 틀린 문항만</option>
           <option value="new">아직 안 푼 문항만</option>
         </select></label>
-      <label>순서 <select id="qOrder"><option value="seq">교재 순서</option><option value="rand">무작위</option><option value="prob">출제 가능성 높은 순</option></select></label>
+      <label>순서 <select id="qOrder"><option value="seq">기본 순서</option><option value="rand">무작위</option><option value="prob">출제 가능성 높은 순</option></select></label>
     </div>
     <div class="row"><button class="btn" id="startQuiz">퀴즈 시작</button><span class="muted small" id="qCount"></span></div>
   </section>`;
@@ -675,7 +674,7 @@ function viewHistory() {
     const blob = new Blob([JSON.stringify(P(), null, 1)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `skax-study-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `ai-interview-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
   };
   $('#importFile').onchange = async (e) => {
@@ -792,5 +791,5 @@ auth.onChange(() => route());
 route();
 auth.init().catch((e) => {
   console.error(e);
-  app.innerHTML = `<div class="empty">초기화 오류: ${esc(e.message)}<br><button class="btn" onclick="localStorage.setItem('skax-guest','1');location.reload()">게스트 모드로 열기</button></div>`;
+  app.innerHTML = `<div class="empty">초기화 오류: ${esc(e.message)}<br><button class="btn" onclick="localStorage.setItem('aie-guest','1');location.reload()">게스트 모드로 열기</button></div>`;
 });

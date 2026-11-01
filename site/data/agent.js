@@ -5,7 +5,6 @@ registerField({
   short: 'AI Agent',
   icon: '🤖',
   color: '#7c3aed',
-  source: '교재: 7. AI Agent 설계 및 구축 (배기주 / SK AX)',
   desc: 'Agent = LLM + Tools, Prompt→Context→Harness Engineering, ReAct·MCP·A2A, Agentic Workflow(Goal·Plan·Execute·Reflect)와 협업 패턴, LangChain 1.0·LangGraph 구현, 평가와 Harness.',
   units: [
     // ───────────────────────────── 1회차
@@ -79,12 +78,12 @@ registerField({
         { q: '"Agentic하다"는 것은 무슨 의미인가요?', a: 'Agent냐 아니냐의 이분법이 아니라, **최소한의 인간 개입으로 스스로 목표를 설정·계획·판단·실행하는 자율성의 정도**를 말합니다. 심리학의 Agentic Behavior처럼 외부 자극에 반응만 하는 것이 아니라 자기주도적으로 행동하는 성질이며, 이를 위해 Reasoning, Memory/State, Tool Use, Self-Reflection 같은 능력이 필요합니다. 그래서 설계할 때도 "어디까지 모델에게 맡기고 어디부터 코드로 통제할지"를 정하는 것이 핵심입니다.', imp: 3, p: 50, s: '1차' },
       ],
       quiz: [
-        { q: '교재의 AI Agent(System) 정의로 가장 적절한 것은?', o: ['대규모 데이터로 사전학습된 언어 모델', 'LLM 기반 추론으로 스스로 도구를 선택·실행하여 목표를 완수하는 소프트웨어 시스템', '규칙 기반 IF-THEN 전문가 시스템', '사람이 정한 순서대로만 LLM을 호출하는 파이프라인'], a: 1, e: 'Agent는 **스스로 도구를 선택·실행**해 목표를 완수한다. 고정 순서 호출은 Workflow.', imp: 5, p: 70, s: '1차' },
+        { q: 'AI Agent(System)의 정의로 가장 적절한 것은?', o: ['대규모 데이터로 사전학습된 언어 모델', 'LLM 기반 추론으로 스스로 도구를 선택·실행하여 목표를 완수하는 소프트웨어 시스템', '규칙 기반 IF-THEN 전문가 시스템', '사람이 정한 순서대로만 LLM을 호출하는 파이프라인'], a: 1, e: 'Agent는 **스스로 도구를 선택·실행**해 목표를 완수한다. 고정 순서 호출은 Workflow.', imp: 5, p: 70, s: '1차' },
         { q: '"Agent = LLM + Tools"에서 Tools의 역할은?', o: ['의도 이해와 작업 계획', '외부 시스템과 통합해 실제 작업을 수행하고 환경과 상호작용', '대화 맥락 요약', '모델 가중치 업데이트'], a: 1, e: 'LLM은 두뇌(이해·계획·기억), Tools는 손발(DB·Cloud·인터넷 연동, 실제 실행).', imp: 4, p: 55, s: '1차' },
         { q: 'Anthropic의 분류에서 "코드가 경로를 통제·재현"하는 방식은?', o: ['Agent', 'Workflow', 'Augmented LLM', 'AGI'], a: 1, e: 'Workflow = 코드가 경로 통제(개발자 통제), Agent = 모델이 런타임 흐름 결정(LLM 통제).', imp: 5, p: 70, s: '1차' },
         { q: 'Workflow 패턴에 해당하지 **않는** 것은?', o: ['Prompt Chaining', 'Routing', 'Orchestrator-Workers', 'Gradient Boosting'], a: 3, e: 'Workflow 패턴: Prompt Chaining, Routing, Parallelization, Orchestrator-Workers, Evaluator(-Optimizer).', imp: 3, p: 45, s: '1차' },
-        { q: 'Agent 방식이 Workflow 대비 커지는 것으로 교재가 지적한 것은?', o: ['재현성', '결정론적 예측 가능성', 'Latency, Cost, Debugging 난이도', '단순성'], a: 2, e: 'Agent: 자율성·유연성↑, 복잡성·고비용·고지연. Workflow: 결정론적·단순·저비용·저지연.', imp: 4, p: 60, s: '2차' },
-        { q: 'Context Engineering의 구성 요소로 교재가 든 것이 **아닌** 것은?', o: ['State / Short-term Memory', 'Long-term Memory', 'RAG', 'GPU 클러스터 스케줄링'], a: 3, e: 'Context = State/단기기억, 장기기억, RAG, Available Tools, Structured Output.', imp: 3, p: 45, s: '1차' },
+        { q: 'Agent 방식이 Workflow 대비 커지는 것으로 가장 적절한 것은?', o: ['재현성', '결정론적 예측 가능성', 'Latency, Cost, Debugging 난이도', '단순성'], a: 2, e: 'Agent: 자율성·유연성↑, 복잡성·고비용·고지연. Workflow: 결정론적·단순·저비용·저지연.', imp: 4, p: 60, s: '2차' },
+        { q: 'Context Engineering의 구성 요소로 해당하지 **않는** 것은?', o: ['State / Short-term Memory', 'Long-term Memory', 'RAG', 'GPU 클러스터 스케줄링'], a: 3, e: 'Context = State/단기기억, 장기기억, RAG, Available Tools, Structured Output.', imp: 3, p: 45, s: '1차' },
         { q: 'Harness Engineering의 핵심 목표는?', o: ['프롬프트 문구를 더 정교하게 다듬는 것', '확률적인 LLM을 Production에서 신뢰할 수 있도록 결정론적 경계(환경)를 코드로 구축하는 것', '모델 파라미터 수를 늘리는 것', 'GPU 비용을 줄이는 것'], a: 1, e: 'Agent = Model + Harness. 상태·흐름 제어, 가드레일·보안, 코드로 규칙을 강제하는 결정론적 제약.', imp: 5, p: 70, s: '2차' },
         { q: '"단순하게 시작해서, 결과가 좋아질 때만 복잡도를 높여라"는 원칙이 의미하는 실무 선택은?', o: ['항상 멀티에이전트로 시작한다', '재현성이 중요하면 Workflow부터, 효과가 확인된 구간에 Agent를 점진 적용한다', 'LLM 없이 규칙 기반으로만 만든다', '프롬프트를 최대한 길게 쓴다'], a: 1, e: 'Enterprise는 Hybrid(Workflow 골격 + 저위험 업무부터 Agent) / Guardrailed Agent로 구성.', imp: 4, p: 60, s: '2차' },
       ],
@@ -181,7 +180,7 @@ print(result["messages"][-1].content)
         { q: 'Reasoning 보완 방식 중 "Harness" 계층에 속하는 것은?', o: ['Inference-time Scaling', 'Chain-of-Thought', 'Cross-Validation (생성자-평가자 교차 확인)', 'Tool Augmentation'], a: 2, e: 'Harness: Feedback Loop(실행 피드백으로 재계획), Cross-Validation(생성자·평가자 교차 확인).', imp: 3, p: 40, s: '2차' },
         { q: 'ReAct 루프의 올바른 순서는?', o: ['Action → Thought → Observation', 'Thought → Action → Observation', 'Observation → Action → Thought', 'Plan → Answer → Reflect'], a: 1, e: 'Thought(사고) → Action(실행) → Observation(관찰) → 정보 충분 시 Answer.', imp: 5, p: 75, s: '1차' },
         { q: 'ReAct 루프의 매 사이클에서 판단해야 할 항목이 **아닌** 것은?', o: ['정보 충족성 판단', '추가 액션 필요성 평가', '루프 종료 조건 확인', '모델 가중치 재학습 여부'], a: 3, e: '정보 충족성, 추가 액션 필요성, 종료 조건. 재학습은 루프와 무관.', imp: 3, p: 45, s: '1차' },
-        { q: 'Supervisor 패턴의 "개념적 기원"으로 교재가 든 연구는?', o: ['AutoGen', 'HuggingGPT', 'ReAct', 'Toolformer'], a: 1, e: '개념적 기원: HuggingGPT(LLM이 Controller로서 전문가 모델에게 위임), 구조적 기원: AutoGen.', imp: 2, p: 25, s: '2차' },
+        { q: 'Supervisor 패턴의 "개념적 기원"으로 꼽히는 연구는?', o: ['AutoGen', 'HuggingGPT', 'ReAct', 'Toolformer'], a: 1, e: '개념적 기원: HuggingGPT(LLM이 Controller로서 전문가 모델에게 위임), 구조적 기원: AutoGen.', imp: 2, p: 25, s: '2차' },
         { q: 'LangChain에서 일반 파이썬 함수를 LLM이 호출 가능한 도구로 만드는 방법은?', o: ['@dataclass', '@tool 데코레이터 + 명확한 Type Hint·Docstring', '@lru_cache', '@app.post'], a: 1, e: '@tool로 변환하고 타입 힌트와 docstring으로 함수 목적·인자를 LLM이 이해하게 한다.', imp: 4, p: 60, s: '1차' },
       ],
     },
@@ -279,7 +278,7 @@ print(result["messages"][-1].content)
         { q: 'SaaS·로컬 파일 등 다양한 외부 생태계와 통합이 빈번한 범용 에이전트에 더 적합한 방식은?', o: ['Native Tool Calling', 'MCP', '하드코딩된 if-else', '배치 처리'], a: 1, e: 'MCP는 느슨한 결합으로 확장·재사용성이 높아 범용 에이전트에 적합.', imp: 4, p: 55, s: '2차' },
         { q: 'A2A 프로토콜에 대한 설명으로 **틀린** 것은?', o: ['에이전트 간 협업·통신을 전담한다', '현재 Linux Foundation 산하 프로젝트다', 'MCP를 대체하기 위한 프로토콜이다', 'Agent Card로 자신의 역량을 광고한다'], a: 2, e: 'A2A는 MCP의 대체가 아니라 **상호 보완** 관계(MCP=도구, A2A=에이전트 간).', imp: 4, p: 60, s: '1차' },
         { q: 'A2A에서 에이전트가 자신의 역량과 인터페이스를 광고하는 JSON 문서는?', o: ['OpenAPI Spec', 'Agent Card', 'Model Card', 'Task Manifest'], a: 1, e: 'Agent Card — 역량·인터페이스·보안 스킴을 선언하며 위변조 방지를 위해 서명이 요구된다.', imp: 3, p: 45, s: '1차' },
-        { q: '여러 에이전트를 거치는 하나의 요청이 "어디서 느려지거나 실패했는지" 추적하는 방법으로 교재가 든 것은?', o: ['W3C Trace Context + OpenTelemetry', 'SMOTE', 'mTLS', 'Agent Card 서명'], a: 0, e: 'Trace Context가 공통 추적번호(traceparent)를 붙이고 OpenTelemetry가 기록을 모아 흐름을 보여준다.', imp: 3, p: 40, s: '2차' },
+        { q: '여러 에이전트를 거치는 하나의 요청이 "어디서 느려지거나 실패했는지" 추적하는 방법으로 가장 적절한 것은?', o: ['W3C Trace Context + OpenTelemetry', 'SMOTE', 'mTLS', 'Agent Card 서명'], a: 0, e: 'Trace Context가 공통 추적번호(traceparent)를 붙이고 OpenTelemetry가 기록을 모아 흐름을 보여준다.', imp: 3, p: 40, s: '2차' },
         { q: 'OAuth2와 OIDC의 차이로 옳은 것은?', o: ['OAuth2는 신원, OIDC는 권한', 'OAuth2는 권한(무엇을 할 수 있는가), OIDC는 신원(누구인가) 증명', '둘 다 암호화 프로토콜', '둘은 같은 것'], a: 1, e: 'OAuth2 = 임시 출입증(권한), OIDC = OAuth2 위의 신원 확인, mTLS = 양방향 인증서 확인.', imp: 3, p: 40, s: '2차' },
       ],
     },
@@ -374,7 +373,7 @@ Goal: "공개 약관/정책에 근거하여, 고객이 추가 문의 없이 스�
 | **Evaluator-Optimizer** | Generator와 Evaluator 책임 분리, Rubric 기반 피드백 루프 | 코드 생성·번역·기술 문서 등 검증 기준이 명확한 작업 | 최대 반복·종료 조건 필수, 평가 기준 모호 시 토큰 낭비 |
 | **Hybrid** | 의사결정 권한을 계층적·상황별로 배분 (예: Manus — 계획 → 동적 Sub-Agent 분산 실행 → 검증·전달) | 대규모·다단계, 품질+비용 균형 | 설계 난이도 최고, Context/State/Memory·Trace·파일·오류 로그 관리 |
 
-:::iv 패턴 고르기 TODAY QUIZ (교재) — 정답 암기!
+:::iv 패턴 고르기 퀴즈 — 정답 암기!
 1. 메인 에이전트가 대화를 주도하다 DW 조회가 필요할 때만 쿼리 전문 에이전트를 호출, 필요한 파라미터만 전달, 결과로 메인이 후속 진행 → ==Agent-as-Tool==
 2. 매 단계 어느 팀(요금·기술·해지방어)에 맡길지 판단·위임, 처리 후 메인으로 복귀, 종료·최종 답변을 중앙 통제 → ==Supervisor==
 3. 실행 전 경쟁사 5곳 조사처럼 독립 하위작업 N개로 한 번에 분해, 병렬 실행 후 하나의 리포트로 취합, SLA 중요 → ==Orchestrator-Workers==
@@ -422,15 +421,15 @@ Goal: "공개 약관/정책에 근거하여, 고객이 추가 문의 없이 스�
         { q: 'Agentic RAG는 일반 RAG와 무엇이 다른가요?', a: '일반 RAG는 검색 → 생성의 단방향이고 검색 결과를 평가 없이 그대로 씁니다. Agentic RAG는 RAG에 Planning·Reflection·Collaboration을 더한 구조로, 질문 유형에 따라 Router가 벡터 검색·웹 검색 경로를 고르고, 검색 문서의 관련성을 Grade해 부족하면 질의를 재작성해 재검색하며, 생성 후에는 환각 여부와 질문 적합성을 검사해 미달이면 다시 생성합니다. max_retry·max_revision 같은 종료 조건과 실패 시 Fallback을 두고, 검증된 답만 메모리에 저장합니다. 정확도는 높아지지만 호출 수·지연이 늘어 비용 상한 설계가 필요합니다.', imp: 5, p: 85, s: '1차' },
       ],
       quiz: [
-        { q: '교재가 인용한 Andrew Ng의 결과에서, GPT-3.5를 에이전트 루프로 감쌌을 때의 최대 정확도는?', o: ['48.1%', '67.0%', '80.2%', '95.1%'], a: 3, e: 'GPT-3.5 zero-shot 48.1%, GPT-4 zero-shot 67.0% → GPT-3.5 + agent loop 최대 95.1%. "전략이 모델 업그레이드를 압도".', imp: 3, p: 50, s: '1차' },
+        { q: 'Andrew Ng가 소개한 결과에서, GPT-3.5를 에이전트 루프로 감쌌을 때의 최대 정확도는?', o: ['48.1%', '67.0%', '80.2%', '95.1%'], a: 3, e: 'GPT-3.5 zero-shot 48.1%, GPT-4 zero-shot 67.0% → GPT-3.5 + agent loop 최대 95.1%. "전략이 모델 업그레이드를 압도".', imp: 3, p: 50, s: '1차' },
         { q: '"Self-Correction 루프가 있어도 구조가 코드로 고정되어 있으면 ___이다." 빈칸은?', o: ['Agent', 'Workflow', 'Swarm', 'AGI'], a: 1, e: 'Agent ≠ Loop. 흐름을 코드가 통제하면 Workflow.', imp: 4, p: 60, s: '2차' },
         { q: 'Goal의 Desired Outcome을 정의할 때 중심이 되는 것은?', o: ['산출물(Output) 형식', '업무 결과(Outcome)', '사용할 LLM 종류', '프롬프트 길이'], a: 1, e: 'Output이 아니라 Outcome 중심 — 대상, 변화, 결정/행동, 범위.', imp: 3, p: 45, s: '2차' },
         { q: 'Success Criteria 중 "인용한 출처가 실제로 그 주장을 뒷받침하는가"에 해당하는 항목은?', o: ['근거성', '충실성(Faithfulness)', '완결성', '일관성'], a: 1, e: '근거성 = 주장마다 출처가 있는가, 충실성 = 그 출처가 주장을 실제로 뒷받침하는가.', imp: 4, p: 55, s: '2차' },
-        { q: 'Control Strategy에서 "반드시 정의해야 하는 것"으로 교재가 든 항목이 **아닌** 것은?', o: ['Max iteration', '실패 시 fallback 전략', '비용 초과 시 종료 정책', '사용할 GPU 개수'], a: 3, e: 'Max iteration, fallback, 근거 부족 시 응답 규칙, 비용 초과 종료 정책. "종료 조건이 없으면 Agent는 멈추지 않는다."', imp: 4, p: 60, s: '2차' },
-        { q: '고객 상담에서 매 단계마다 어느 팀에 맡길지 판단·위임하고, 처리 후 제어가 메인으로 돌아오며, 종료와 최종 답변을 중앙에서 통제해야 한다. 가장 적합한 패턴은?', o: ['Pipeline', 'Supervisor', 'Swarm', 'Orchestrator-Workers'], a: 1, e: '매 스텝 판단 + 중앙 복귀 + 종료·종합 통제 = Supervisor (교재 TODAY QUIZ 2번).', imp: 5, p: 75, s: '2차' },
-        { q: '시장조사 리포트: 실행 전에 경쟁사 5곳 조사처럼 독립 하위작업으로 한 번에 분해하고 병렬 실행 후 취합. 가장 적합한 패턴은?', o: ['Supervisor', 'Agent-as-Tool', 'Orchestrator-Workers', 'Swarm'], a: 2, e: '실행 전 일괄 분해 + 병렬 Fan-out + Synthesis = Orchestrator-Workers (TODAY QUIZ 3번).', imp: 5, p: 75, s: '2차' },
-        { q: '상담 에이전트가 주제가 바뀌면 자신이 직접 전문 에이전트에게 대화를 넘기고 빠지는 구조는?', o: ['Router', 'Swarm', 'Pipeline', 'Evaluator-Optimizer'], a: 1, e: 'Hand-off(Peer-to-Peer) + 넘긴 쪽은 빠짐 = Swarm (TODAY QUIZ 4번).', imp: 5, p: 70, s: '2차' },
-        { q: '메인 에이전트가 대화를 주도하다 DW 조회가 필요할 때만 전문 에이전트를 호출하고, 보안상 필요한 파라미터만 전달한다. 패턴은?', o: ['Agent-as-Tool', 'Supervisor', 'Pipeline', 'Swarm'], a: 0, e: '서브에이전트를 함수처럼 호출 + State Isolation = Agent-as-Tool (TODAY QUIZ 1번).', imp: 5, p: 70, s: '2차' },
+        { q: 'Control Strategy에서 "반드시 정의해야 하는 것"으로 해당하지 **않는** 것은?', o: ['Max iteration', '실패 시 fallback 전략', '비용 초과 시 종료 정책', '사용할 GPU 개수'], a: 3, e: 'Max iteration, fallback, 근거 부족 시 응답 규칙, 비용 초과 종료 정책. "종료 조건이 없으면 Agent는 멈추지 않는다."', imp: 4, p: 60, s: '2차' },
+        { q: '고객 상담에서 매 단계마다 어느 팀에 맡길지 판단·위임하고, 처리 후 제어가 메인으로 돌아오며, 종료와 최종 답변을 중앙에서 통제해야 한다. 가장 적합한 패턴은?', o: ['Pipeline', 'Supervisor', 'Swarm', 'Orchestrator-Workers'], a: 1, e: '매 스텝 판단 + 중앙 복귀 + 종료·종합 통제 = Supervisor.', imp: 5, p: 75, s: '2차' },
+        { q: '시장조사 리포트: 실행 전에 경쟁사 5곳 조사처럼 독립 하위작업으로 한 번에 분해하고 병렬 실행 후 취합. 가장 적합한 패턴은?', o: ['Supervisor', 'Agent-as-Tool', 'Orchestrator-Workers', 'Swarm'], a: 2, e: '실행 전 일괄 분해 + 병렬 Fan-out + Synthesis = Orchestrator-Workers.', imp: 5, p: 75, s: '2차' },
+        { q: '상담 에이전트가 주제가 바뀌면 자신이 직접 전문 에이전트에게 대화를 넘기고 빠지는 구조는?', o: ['Router', 'Swarm', 'Pipeline', 'Evaluator-Optimizer'], a: 1, e: 'Hand-off(Peer-to-Peer) + 넘긴 쪽은 빠짐 = Swarm.', imp: 5, p: 70, s: '2차' },
+        { q: '메인 에이전트가 대화를 주도하다 DW 조회가 필요할 때만 전문 에이전트를 호출하고, 보안상 필요한 파라미터만 전달한다. 패턴은?', o: ['Agent-as-Tool', 'Supervisor', 'Pipeline', 'Swarm'], a: 0, e: '서브에이전트를 함수처럼 호출 + State Isolation = Agent-as-Tool.', imp: 5, p: 70, s: '2차' },
         { q: 'Router와 Supervisor의 차이로 옳은 것은?', o: ['Router는 N회 반복 판단, Supervisor는 1회 분기', 'Router는 1회 분기 후 제어권·종료 판단이 없고, Supervisor는 반복 판단·복귀·종료·종합을 담당', '둘은 동일하다', 'Router만 State를 유지한다'], a: 1, e: 'Router: 입력 분류 후 한 곳으로 분기하면 끝(Stateless 판단). Supervisor: 매 결과마다 다음 담당 결정, 종료 판단.', imp: 4, p: 55, s: '2차' },
         { q: '멀티 에이전트 3대 실패 범주 중 비중이 가장 큰 것(약 40%)은?', o: ['검증/종료 실패', '에이전트 간 정렬 실패', '명세/설계 실패 (모호한 역할 정의)', '하드웨어 장애'], a: 2, e: '명세/설계 약 40%, 정렬 실패 약 35%, 검증/종료 약 20%.', imp: 3, p: 45, s: '2차' },
         { q: 'Agentic RAG = [ ? ] + RAG. 빈칸에 들어갈 조합은?', o: ['Planning + Reflection + Collaboration', 'Embedding + Chunking + Indexing', 'Dropout + BatchNorm + Adam', 'Docker + MLflow + FastAPI'], a: 0, e: '검색 전략 설계(Planning), 스스로 검토·재검색(Reflection), 역할 분담(Collaboration).', imp: 5, p: 70, s: '1차' },
@@ -597,7 +596,7 @@ workflow.add_conditional_edges("relevance_check", is_relevant, {
       ],
       quiz: [
         { q: 'LangChain 1.0에서 기존 AgentExecutor를 대체한 표준 상위 API는?', o: ['initialize_agent', 'create_agent', 'AgentRunner', 'build_graph'], a: 1, e: 'create_agent — LangGraph 런타임 위에서 실행되며 미들웨어로 루프 각 단계에 개입.', imp: 4, p: 60, s: '1차' },
-        { q: 'LangChain 0.x의 구조적 한계로 교재가 지적한 것은?', o: ['LLM을 호출할 수 없다', '"사고 구조"와 "운영 정책(비용·정책·모니터링)"이 체인 안에 뒤섞여 재사용성이 떨어진다', '파이썬을 지원하지 않는다', '벡터 DB를 연동할 수 없다'], a: 1, e: '실행 흐름과 실행 통제가 분리되지 않음 → 1.0에서 Middleware로 분리.', imp: 3, p: 45, s: '2차' },
+        { q: 'LangChain 0.x의 구조적 한계로 가장 적절한 것은?', o: ['LLM을 호출할 수 없다', '"사고 구조"와 "운영 정책(비용·정책·모니터링)"이 체인 안에 뒤섞여 재사용성이 떨어진다', '파이썬을 지원하지 않는다', '벡터 DB를 연동할 수 없다'], a: 1, e: '실행 흐름과 실행 통제가 분리되지 않음 → 1.0에서 Middleware로 분리.', imp: 3, p: 45, s: '2차' },
         { q: '매 모델 호출 직전에 실행되어 PII 마스킹·로깅에 적합한 훅은?', o: ['@before_agent', '@before_model', '@after_agent', '@wrap_tool_call'], a: 1, e: 'before_agent는 시작 전 1회, before_model은 매 모델 호출 직전.', imp: 4, p: 55, s: '1차' },
         { q: 'Wrap-style 미들웨어에 대한 설명으로 옳은 것은?', o: ['(state, runtime)을 받아 State만 갱신한다', '(request, handler)를 받아 실제 호출을 감싸 실행 자체(모델 교체·재시도·도구 차단)를 통제한다', '에이전트 종료 후 1회만 실행된다', '호출을 건드리지 못한다'], a: 1, e: 'Node-style은 지점에서 State 관찰·갱신, Wrap-style은 호출 자체를 감싸 통제.', imp: 4, p: 60, s: '1차' },
         { q: 'HumanInTheLoopMiddleware 사용 시 함께 필요한 것은?', o: ['GPU', 'checkpointer와 thread_id', 'Docker', 'Vector DB'], a: 1, e: 'Pause/Resume은 실행 상태(State Snapshot) 저장이 전제 → checkpointer + thread_id.', imp: 5, p: 70, s: '1차' },
@@ -607,7 +606,7 @@ workflow.add_conditional_edges("relevance_check", is_relevant, {
         { q: 'Supervisor State에 step_count와 max_steps가 필수인 이유는?', o: ['병렬 쓰기 충돌 방지', '상·하위 왕복 루프라 무한 루프 위험이 있기 때문', '메모리 절약', '토큰 계산을 위해'], a: 1, e: 'Supervisor는 매 턴 복귀하는 구조 → 종료 제어용 카운터 필수. (Orchestrator는 병렬 결과용 커스텀 리듀서가 필수)', imp: 4, p: 55, s: '2차' },
         { q: 'Fan-out에서 한 브랜치가 실패했을 때 성공한 브랜치 결과를 보존하고 실패 브랜치만 재시도하려면?', o: ['max_concurrency를 늘린다', 'Checkpointer를 사용한다', 'Reducer를 제거한다', '모든 노드를 순차 실행한다'], a: 1, e: '성공 노드 결과는 Checkpointer에 저장 → 재개 시 실패 브랜치만 재실행.', imp: 4, p: 55, s: '2차' },
         { q: 'Node와 Agent의 관계에 대한 설명으로 옳은 것은?', o: ['항상 1:1로 매핑된다', '하나의 Agent가 여러 Node(Plan→Execute→Review)에 걸쳐 사고할 수도, LLM 없는 Node(ToolNode)도 존재할 수 있다', 'Node는 반드시 LLM을 포함한다', 'Agent는 Node를 포함할 수 없다'], a: 1, e: 'Node = HOW(작업 단위), Agent = WHAT/WHEN(판단 주체). Case1 Node=Agent, Case2 여러 Node=1 Agent, Case3 Node=Tool.', imp: 3, p: 45, s: '2차' },
-        { q: '병렬 실행(Parallel Execution)의 주 목적으로 교재가 강조한 것은?', o: ['답변 품질 향상', '효율(전체 처리 시간 단축)', '보안 강화', '비용 절감'], a: 1, e: '"병렬 처리 = 품질이 아니라 효율을 위한 것". 오히려 순간 리소스·Rate limit 관리가 필요.', imp: 3, p: 45, s: '2차' },
+        { q: '병렬 실행(Parallel Execution)의 주 목적으로 가장 적절한 것은?', o: ['답변 품질 향상', '효율(전체 처리 시간 단축)', '보안 강화', '비용 절감'], a: 1, e: '"병렬 처리 = 품질이 아니라 효율을 위한 것". 오히려 순간 리소스·Rate limit 관리가 필요.', imp: 3, p: 45, s: '2차' },
       ],
     },
 
@@ -698,7 +697,7 @@ workflow.add_conditional_edges("relevance_check", is_relevant, {
       quiz: [
         { q: 'Agent 평가가 RAG 평가와 다른 핵심 이유는?', o: ['Agent는 텍스트를 생성하지 않기 때문', '외부 환경 변경(State Change)과 행동 궤적(Trajectory)까지 평가해야 하기 때문', 'Agent는 LLM을 쓰지 않기 때문', 'RAG는 평가가 불가능하기 때문'], a: 1, e: 'RAG는 정적 텍스트 매칭·생성 품질 중심, Agent는 상태 변화와 궤적 평가가 필요.', imp: 4, p: 60, s: '2차' },
         { q: 'LLM의 비결정성을 고려해 K회 반복 실행으로 안정성을 측정하는 지표는?', o: ['F1', 'PassK', 'BLEU', 'AUC'], a: 1, e: '전통 SW는 1회로 PASS 판단 가능하지만 Agent는 K회(예: 3) 반복해 일관성 측정 → PassK.', imp: 5, p: 65, s: '2차' },
-        { q: 'Golden Dataset 구성으로 교재가 권장한 것은?', o: ['표준 케이스만', '표준 + 적대적(Adversarial) + 실패 로그', '랜덤 샘플', '운영 로그 전체'], a: 1, e: '표준·적대적·실패 로그를 포함하고 Sandbox/Mock 환경에서 실행.', imp: 3, p: 45, s: '2차' },
+        { q: 'Golden Dataset 구성으로 권장되는 것은?', o: ['표준 케이스만', '표준 + 적대적(Adversarial) + 실패 로그', '랜덤 샘플', '운영 로그 전체'], a: 1, e: '표준·적대적·실패 로그를 포함하고 Sandbox/Mock 환경에서 실행.', imp: 3, p: 45, s: '2차' },
         { q: '"결제 전 승인, 삭제 전 조회" 같은 도구 간 선후 관계 검증은 어느 평가 축에 속하나?', o: ['결과', '도구 (Execution Order / Trajectory)', '정책', '운영'], a: 1, e: '도구 축: Tool Selection, Argument Validation, Execution Order, Call Efficiency → Trajectory 준수율.', imp: 3, p: 45, s: '2차' },
         { q: '정책 축(프롬프트 인젝션·권한 이탈·PII 유출)의 판정 기준 예시는?', o: ['PassK ≥ 90%', 'Trajectory 준수율 ≥ 90%', 'Zero-Fault (위반 0건, 100% 차단)', 'P95 ≤ SLA'], a: 2, e: '보안·컴플라이언스는 허용치가 없다 → 위반 0건.', imp: 4, p: 55, s: '2차' },
         { q: '"판정(Judgment)은 확률에 맡기고, ___은 결정론으로 묶는다." 빈칸은?', o: ['프롬프트', '게이트(Gate)', '임베딩', '모델 가중치'], a: 1, e: 'Judge는 확률적, 그 결과를 받는 라우팅·분기(Gate)는 결정론적 순수 함수로.', imp: 5, p: 65, s: '2차' },
